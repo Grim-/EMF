@@ -4,8 +4,15 @@ using Verse;
 
 namespace EMF
 {
+    [StaticConstructorOnStartup]
     public static class EMFPatches
     {
+        public static string packageID = "com.emo.magicframework";
+        static EMFPatches()
+        {
+            Harmony harmony = new Harmony(packageID);
+            harmony.PatchAll();
+        }
 
         [HarmonyPatch(typeof(Pawn_EquipmentTracker))]
         [HarmonyPatch("TryDropEquipment")]

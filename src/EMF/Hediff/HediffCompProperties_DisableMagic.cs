@@ -17,7 +17,4 @@ namespace EMF
         public override string CompLabelInBracketsExtra => "magic disabled";
     }
 
-
-
-
 }

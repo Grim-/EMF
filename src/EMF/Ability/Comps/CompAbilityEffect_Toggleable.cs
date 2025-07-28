@@ -7,8 +7,6 @@ namespace EMF
 {
 
 
-
-
     public abstract class CompAbilityEffect_Toggleable : CompAbilityEffect
     {
         protected bool IsActive = false;
