@@ -9,7 +9,15 @@ namespace EMF
 {
     public static class TargetUtil
     {
+        public static bool HasAbility(this Pawn pawn, AbilityDef AbiityDef)
+        {
+            if (pawn?.abilities == null)
+            {
+                return false;
+            }
 
+            return pawn.abilities.AllAbilitiesForReading.Find(x => x.def == AbiityDef) != null;
+        }
         public static void QuickHealInRadius(float healAmount, IntVec3 Position, Map map, float radius, Faction Faction, FriendlyFireSettings friendlyFireSettings, bool useCenter = true)
         {
             foreach (var item in GenRadial.RadialDistinctThingsAround(Position, map, radius, useCenter))

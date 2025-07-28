@@ -6,6 +6,8 @@ using Verse;
 
 namespace EMF
 {
+
+
     public class CompProperties_DomainZone : CompProperties
     {
         public TerrainDef FloorDef;

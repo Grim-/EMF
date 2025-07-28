@@ -45,7 +45,7 @@ namespace EMF
             Map map = parent.Map;
             foreach (var item in ParentZone.ZoneCells)
             {
-                MagicUtil.TryExtinguishFireAt(item, map, Props.fireAmount.max + 500);
+                EMFUtil.TryExtinguishFireAt(item, map, Props.fireAmount.max + 500);
             }
 
             base.OnZoneDespawned(ParentZone, ref cells);

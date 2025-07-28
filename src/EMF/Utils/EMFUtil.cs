@@ -24,7 +24,83 @@ namespace EMF
             }
             return Current.Game.tickManager.TicksGame <= LastTriggerTick + CooldownTicks;
         }
+        public static bool HasMagicDisabled(this Pawn pawn)
+        {
+            if (pawn?.health?.hediffSet?.hediffs == null) return false;
 
+            for (int i = 0; i < pawn.health.hediffSet.hediffs.Count; i++)
+            {
+                var hediff = pawn.health.hediffSet.hediffs[i];
+                if (hediff.TryGetComp<HediffComp>() is IDisableMagic magicComp && magicComp.DisablesMagic)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public static Gene_BasicResource GetGeneForResourceDef(this Pawn pawn, AbilityResourceDef resourceDef)
+        {
+            if (pawn?.genes?.GenesListForReading == null || resourceDef == null)
+                return null;
+
+
+            Gene_BasicResource foundGene = pawn.genes.GenesListForReading
+                .OfType<Gene_BasicResource>()
+                .FirstOrDefault(g => g.HasResource(resourceDef));
+            return foundGene;
+        }
+
+        public static bool HasResourceDef(this Pawn pawn, AbilityResourceDef resourceDef, out Gene_BasicResource OwningGene)
+        {
+            OwningGene = null;
+
+            if (pawn?.genes?.GenesListForReading == null || resourceDef == null)
+            {
+                return false;
+            }
+
+            Gene_BasicResource foundGene = pawn.genes.GenesListForReading
+            .OfType<Gene_BasicResource>()
+            .FirstOrDefault(g => g.HasResource(resourceDef));
+
+            if (foundGene != null)
+            {
+                OwningGene = foundGene;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool HasTeleportingDisabled(this Pawn pawn)
+        {
+            if (pawn?.health?.hediffSet?.hediffs == null)
+                return false;
+
+            for (int i = 0; i < pawn.health.hediffSet.hediffs.Count; i++)
+            {
+                var hediff = pawn.health.hediffSet.hediffs[i];
+                if (hediff.TryGetComp<HediffComp>() is IDisableTeleportingAbilities magicComp && magicComp.DisablesTeleporting)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public static bool HasRessurectionDisabled(this Pawn pawn)
+        {
+            if (pawn?.health?.hediffSet?.hediffs == null) return false;
+
+            for (int i = 0; i < pawn.health.hediffSet.hediffs.Count; i++)
+            {
+                var hediff = pawn.health.hediffSet.hediffs[i];
+                if (hediff.TryGetComp<HediffComp>() is IDisableRessurection resComp && resComp.DisablesRessurection)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public static bool TryExtinguishFireAt(IntVec3 cell, Map map, float extinguishAmount = 100f)
         {
             if (!cell.IsValid || map == null)
@@ -307,7 +383,22 @@ namespace EMF
 
             return totalHealed;
         }
+        public static void DropAndEquip(this Pawn_EquipmentTracker equipment, ThingWithComps newEquipment)
+        {
+            if (equipment?.pawn == null || newEquipment == null)
+                return;
 
+            var existingEquipment = equipment.AllEquipmentListForReading
+                .FirstOrDefault(x => x.def.equipmentType == newEquipment.def.equipmentType);
+
+            if (existingEquipment != null)
+            {
+                equipment.Remove(existingEquipment);
+                GenPlace.TryPlaceThing(existingEquipment, equipment.pawn.Position, equipment.pawn.Map, ThingPlaceMode.Near);
+            }
+
+            equipment.AddEquipment(newEquipment);
+        }
 
         [DebugAction("EMF Utils", "Spawn in grid", false, false, false, false, false, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 100)]
         private static List<DebugActionNode> SetTerrainRect()
@@ -348,5 +439,4 @@ namespace EMF
             return list;
         }
     }
-
 }

@@ -3,6 +3,7 @@ using Verse;
 
 namespace EMF
 {
+
     public class Ticker : IExposable
     {
         public int Ticks = 100;

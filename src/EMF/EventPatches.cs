@@ -47,14 +47,13 @@ namespace EMF
         //- Successful cooking(Cooking skill)
         //- Mining completion(Mining skill)
 
-
         [HarmonyPatch(typeof(DamageWorker_AddInjury), "ApplyToPawn")]
         public static class Patch_DamageWorker_AddInjury_ApplyToPawn
         {
             public static DamageWorker.DamageResult Postfix(DamageWorker.DamageResult __result, DamageInfo dinfo, Pawn pawn)
             {
-                if (Current.ProgramState != ProgramState.Playing) return __result;
-                //DebugDamage(__result, dinfo, pawn);
+                if (Current.ProgramState != ProgramState.Playing) 
+                    return __result;
                 return EventManager.Instance.RaiseDamageDealt(pawn, dinfo.Instigator, dinfo, __result);
             }
         }
