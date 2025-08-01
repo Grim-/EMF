@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <!-- Replace the Animal render tree body node with conditional version -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/PawnRenderTreeDef[defName="Animal"]/root/children/li[debugLabel="Body"]/workerClass</xpath>
+    <value>
+      <workerClass>EMF.PawnRenderNodeWorker_AnimalBody_Conditional</workerClass>
+    </value>
+  </Operation>
+</Patch>

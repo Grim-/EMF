@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld;
+using System.Collections.Generic;
+using System.Linq;
 using Verse;
 
 namespace EMF
@@ -13,6 +15,42 @@ namespace EMF
             Harmony harmony = new Harmony(packageID);
             harmony.PatchAll();
         }
+
+
+
+
+
+
+        [HarmonyPatch(typeof(Pawn_EquipmentTracker), "GetGizmos")]
+        public class EquipmentTracker_GetGizmos_Patch
+        {
+            static void Postfix(Pawn_EquipmentTracker __instance, ref IEnumerable<Gizmo> __result)
+            {
+                var originalGizmos = __result.ToList();
+
+                var additionalGizmos = new List<Gizmo>();
+                foreach (var eq in __instance.AllEquipmentListForReading)
+                {
+                    if (eq is IDrawEquippedGizmos equippedGizmos)
+                    {
+                        additionalGizmos.AddRange(equippedGizmos.GetEquippedGizmos());
+                    }
+
+                    foreach (var item in eq.AllComps)
+                    {
+                        if (item is IDrawEquippedGizmos compEquippedGizmos)
+                        {
+                            additionalGizmos.AddRange(compEquippedGizmos.GetEquippedGizmos());
+                        }
+                    }
+
+                }
+
+                __result = originalGizmos.Concat(additionalGizmos);
+            }
+        }
+
+
 
         [HarmonyPatch(typeof(Pawn_EquipmentTracker))]
         [HarmonyPatch("TryDropEquipment")]

@@ -6,6 +6,7 @@ namespace EMF
 {
     public class CompProperties_AbilityDamageInRadius : CompProperties_AreaDamageBase
     {
+        public EffecterDef explosionEffecterDef = null;
         public float radius = 2f;
 
         public CompProperties_AbilityDamageInRadius()
@@ -25,18 +26,26 @@ namespace EMF
 
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
         {
+            base.Apply(target, dest);
+
             Map map = parent.pawn.Map;
-            IntVec3 start = parent.pawn.Position;
+            IntVec3 start = target.Cell;
+
+
+            if (Props.explosionEffecterDef != null)
+            {
+                Props.explosionEffecterDef.Spawn(start, map);
+            }
 
             StageVisualEffect.CreateRadialStageEffect(start, Props.radius, map, 3, (cell, targetMap, currentSection) =>
             {
-                foreach (var things in cell.GetThingList(targetMap))
+                if (Props.cellEffecterDef != null)
                 {
-                    if (this.Props.friendlyFireParms.CanTargetThing(this.parent.pawn, things) && this.Props.targetParms.CanTarget(things))
-                    {
-                        things.TakeDamage(GetDamage(this.parent.pawn, things));
-                    }
+                    Props.cellEffecterDef.Spawn(cell, targetMap);
                 }
+
+
+                DealDamageToThingsInCell(cell, targetMap);
             });
         }
 

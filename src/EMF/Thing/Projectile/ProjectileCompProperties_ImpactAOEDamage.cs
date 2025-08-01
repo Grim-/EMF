@@ -4,9 +4,6 @@ using Verse;
 
 namespace EMF
 {
-
-
-
     public class ProjectileCompProperties_ImpactAOEDamage : ProjectileCompProperties
     {
         public DamageDef damageDef;

@@ -28,7 +28,7 @@ namespace EMF
     public class ProjectileComp_PeriodicAOEDamage : ProjectileComp
     {
         private Thing launcher;
-        private Dictionary<Thing, int> lastDamagedTicks;
+        private Dictionary<Thing, int> lastDamagedTicks = new Dictionary<Thing, int>();
 
         public ProjectileCompProperties_PeriodicAOEDamage Props => (ProjectileCompProperties_PeriodicAOEDamage)props;
 

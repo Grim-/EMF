@@ -55,12 +55,20 @@ namespace EMF
             storedEquipment = new ThingOwner<Thing>(this, false, LookMode.Deep);
         }
 
+
+        public override void CompPostPostAdd(DamageInfo? dinfo)
+        {
+            base.CompPostPostAdd(dinfo);
+
+            ActivateTransformation();
+        }
+
         public override void CompPostPostRemoved()
         {
             base.CompPostPostRemoved();
             if (isTransformed)
             {
-                DeactivateTransformation(true);
+                DeactivateTransformation(false);
             }
         }
 
@@ -76,7 +84,7 @@ namespace EMF
             }
             else
             {
-                EffecterDefOf.MeatExplosionExtraLarge.Spawn(this.Pawn.Position, this.Pawn.Map);
+                EffecterDefOf.Shield_Break.Spawn(this.Pawn.Position, this.Pawn.Map);
             }
 
             isTransformed = true;
@@ -191,6 +199,7 @@ namespace EMF
             {
                 this.Props.revertEffecter.Spawn(this.Pawn.Position, this.Pawn.Map);
             }
+            else EffecterDefOf.Shield_Break.Spawn(this.Pawn.Position, this.Pawn.Map);
 
             if (transformationWeapon != null && Pawn.equipment?.Contains(transformationWeapon) == true)
             {
@@ -292,31 +301,35 @@ namespace EMF
             transformationApparel.Clear();
         }
 
-        public override IEnumerable<Gizmo> CompGetGizmos()
-        {
-            if (Pawn.Faction != Faction.OfPlayer) yield break;
+        //public override IEnumerable<Gizmo> CompGetGizmos()
+        //{
+        //    if (Pawn.Faction != Faction.OfPlayer) 
+        //        yield break;
 
-            if (isTransformed)
-            {
-                yield return new Command_Action
-                {
-                    defaultLabel = "Revert",
-                    defaultDesc = "Revert from your transformed state, restoring your original equipment.",
-                    icon = TexButton.Minus,
-                    action = () => DeactivateTransformation()
-                };
-            }
-            else
-            {
-                yield return new Command_Action
-                {
-                    defaultLabel = "Transform",
-                    defaultDesc = "Activate your power and transform.",
-                    icon = TexButton.Add,
-                    action = () => ActivateTransformation()
-                };
-            }
-        }
+        //    if (Prefs.DevMode)
+        //    {
+        //        if (isTransformed)
+        //        {
+        //            yield return new Command_Action
+        //            {
+        //                defaultLabel = "Revert",
+        //                defaultDesc = "Revert from your transformed state, restoring your original equipment.",
+        //                icon = TexButton.Minus,
+        //                action = () => DeactivateTransformation()
+        //            };
+        //        }
+        //        else
+        //        {
+        //            yield return new Command_Action
+        //            {
+        //                defaultLabel = "Transform",
+        //                defaultDesc = "Activate your power and transform.",
+        //                icon = TexButton.Add,
+        //                action = () => ActivateTransformation()
+        //            };
+        //        }
+        //    }
+        //}
 
         public void GetChildHolders(List<IThingHolder> outChildren)
         {

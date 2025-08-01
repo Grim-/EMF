@@ -74,10 +74,13 @@
   <ItemGroup>
     <Compile Include="Ability\AbilityResource\AbilityResourceDef.cs" />
     <Compile Include="Ability\AbilityResource\BasicResourceGeneDef.cs" />
+    <Compile Include="Ability\Comps\CompProperties_AbilityEffectChannelable.cs" />
+    <Compile Include="Ability\Comps\CompProperties_AbilityEffectChannelableBeam.cs" />
     <Compile Include="Ability\AbilityResource\LevelingResourceAbilityDef.cs" />
     <Compile Include="Ability\Comps\CompProperties_AbilityAddStacks.cs" />
     <Compile Include="Ability\Comps\CompProperties_AbilityToggleWithResource.cs" />
     <Compile Include="Ability\Comps\CompProperties_AbilityUseResource.cs" />
+    <Compile Include="Ability\Comps\Jumping\CompProperties_BaseJumpEffect.cs" />
     <Compile Include="Ability\Comps\CompProperties_ConsumeHediffStacks.cs" />
     <Compile Include="Ability\Comps\CompProperties_EquippableAbility.cs" />
     <Compile Include="Ability\Comps\CompProperties_ResourceToggleHediff.cs" />
@@ -106,6 +109,7 @@
     <Compile Include="Hediff\HediffCompProperties_DamagePerInterval.cs" />
     <Compile Include="Hediff\HediffCompProperties_EquipmentDamagePerInterval.cs" />
     <Compile Include="Hediff\HediffCompProperties_HealAOEPerInterval.cs" />
+    <Compile Include="Hediff\HediffCompProperties_MirrorImage.cs" />
     <Compile Include="Hediff\HediffCompProperties_Propagate.cs" />
     <Compile Include="Hediff\HediffCompProperties_Transformation.cs" />
     <Compile Include="Hediff\Hediff_Petrification.cs" />
@@ -113,6 +117,31 @@
     <Compile Include="Hediff\Stack\HediffCompProperties_BaseStack.cs" />
     <Compile Include="Hediff\Stack\HediffCompProperties_RemoveSelfAtMaxStacks.cs" />
     <Compile Include="Interfaces\IStackableHediff.cs" />
+    <Compile Include="JObs\JobDriver_DoWeaponTransformation.cs" />
+    <Compile Include="Thing\Comps\CompProperties_BuildingFromPawn.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\BaseEvolutionConditionWorker.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\Evolution.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\EvolutionCondition.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\EvolutionConditionWorker_Age.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\EvolutionConditionWorker_Combat.cs" />
+    <Compile Include="Thing\Comps\Pawn\CompProperties_EvolutionChamber.cs" />
+    <Compile Include="Thing\Comps\Pawn\CompProperties_PawnEvolvable.cs" />
+    <Compile Include="Thing\Comps\Pawn\CompProperties_PawnTransformable.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\EvolutionConditionWorker_Body.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\EvolutionConditionWorker_Composite.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\EvolutionConditionWorker_Environment.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\EvolutionConditionWorker_Health.cs" />
+    <Compile Include="JObs\JobDriver_TransformIntoBuilding.cs" />
+    <Compile Include="Thing\Beam\BeamCollisionTracker.cs" />
+    <Compile Include="Thing\Beam\BeamRenderer.cs" />
+    <Compile Include="Thing\Beam\Beam_Thing.cs" />
+    <Compile Include="Graphic\GraphicConditional.cs" />
+    <Compile Include="Interfaces\IChannelableAbility.cs" />
+    <Compile Include="Interfaces\IDrawEquippedGizmos.cs" />
+    <Compile Include="JObs\JobDriver_CastAbilityChannel.cs" />
+    <Compile Include="Thing\Comps\Pawn\Evolution\EvolutionConditionWorker_Skills.cs" />
+    <Compile Include="Utils\MeshUtility.cs" />
+    <Compile Include="Thing\Comps\CompProperties_TransformingThing.cs" />
     <Compile Include="Utils\EMFDebugActions.cs" />
     <Compile Include="Ability\Comps\BaseToggleAbilityComp.cs" />
     <Compile Include="Ability\Comps\Area Damage\CompProperties_AbilityDamageInRadius.cs" />
@@ -143,9 +172,9 @@
     <Compile Include="Hediff\HediffCompProperties_DisableMagic.cs" />
     <Compile Include="Interfaces\IDisableTeleportingAbilities.cs" />
     <Compile Include="Thing\ActiveZone\ActiveZone.cs" />
-    <Compile Include="Thing\ActiveZone\CompProperties_AbilityZoneEffect.cs" />
-    <Compile Include="Thing\ActiveZone\CompProperties_SpawnConalZoneEffect.cs" />
-    <Compile Include="Thing\ActiveZone\CompProperties_SpawnRadialZoneEffect.cs" />
+    <Compile Include="Ability\Comps\CompProperties_AbilityZoneEffect.cs" />
+    <Compile Include="Ability\Comps\CompProperties_SpawnConalZoneEffect.cs" />
+    <Compile Include="Ability\Comps\CompProperties_SpawnRadialZoneEffect.cs" />
     <Compile Include="Thing\ActiveZone\Comps\ActiveZoneComp.cs" />
     <Compile Include="Thing\ActiveZone\Comps\CompProperties_ActiveZoneApplyHediff.cs" />
     <Compile Include="Thing\ActiveZone\Comps\CompProperties_ActiveZoneDamage.cs" />
@@ -224,6 +253,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Ability\NewFolder1\" />
+    <Folder Include="Thing\Transforming Weapon\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

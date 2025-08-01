@@ -13,7 +13,12 @@ namespace EMF
         public static ThingDef EMF_PetrifiedStatue;
         public static ThingDef EMF_ThingFlyer;
         public static ThingDef EMF_DelegateFlyer;
+        public static ThingDef EMF_BeamThing;
         public static HediffDef EMF_BoundWeapon;
+
+        public static JobDef EMF_CastAbilityChannel;
+        public static JobDef EMF_JobTransformIntoBuilding;
+        public static JobDef EMF_JobDoWeaponTransformation;
     }
 
 }

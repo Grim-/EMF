@@ -2,6 +2,7 @@
 
 namespace EMF
 {
+
     public abstract class BaseToggleAbilityComp : CompAbilityEffect
     {
         public virtual void OnParentActivated()

@@ -3,8 +3,6 @@ using Verse;
 
 namespace EMF
 {
-
-
     public class CompProperties_AbilityUseResource : CompProperties_AbilityEffect
     {
         public AbilityResourceDef resourceDef;

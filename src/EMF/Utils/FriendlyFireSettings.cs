@@ -67,7 +67,16 @@ namespace EMF
                 canTargetSelf = false
             };
         }
-
+        public static FriendlyFireSettings AllAttack()
+        {
+            return new FriendlyFireSettings()
+            {
+                canTargetFriendly = false,
+                canTargetHostile = true,
+                canTargetNeutral = true,
+                canTargetSelf = false
+            };
+        }
         public static FriendlyFireSettings All()
         {
             return new FriendlyFireSettings()

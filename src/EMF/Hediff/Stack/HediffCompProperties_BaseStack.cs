@@ -1,9 +1,11 @@
-﻿using Verse;
+﻿using System.Collections.Generic;
+using Verse;
 
 namespace EMF
 {
     public abstract class HediffCompProperties_BaseStack : HediffCompProperties
     {
+
     }
 
     public abstract class HediffComp_BaseStack : HediffComp
