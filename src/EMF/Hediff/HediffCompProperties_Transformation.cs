@@ -21,7 +21,6 @@ namespace EMF
         }
     }
 
-
     public class HediffComp_Transformation : HediffComp, IThingHolder
     {
         private bool isTransformed;
@@ -31,6 +30,7 @@ namespace EMF
         private List<Ability> addedAbilities = new List<Ability>();
         private ThingWithComps transformationWeapon;
         private List<Apparel> transformationApparel = new List<Apparel>();
+        private Thing transformationSource;
 
         public override string CompLabelInBracketsExtra => isTransformed ? "Transformed" : base.CompLabelInBracketsExtra;
 
@@ -54,11 +54,14 @@ namespace EMF
             storedEquipment = new ThingOwner<Thing>(this, false, LookMode.Deep);
         }
 
+        public void SetTransformationSource(Thing source)
+        {
+            transformationSource = source;
+        }
 
         public override void CompPostPostAdd(DamageInfo? dinfo)
         {
             base.CompPostPostAdd(dinfo);
-
             ActivateTransformation();
         }
 
@@ -76,7 +79,6 @@ namespace EMF
             if (isTransformed || Pawn == null)
                 return;
 
-
             if (this.Props.transformationEffecter != null)
             {
                 this.Props.transformationEffecter.Spawn(this.Pawn.Position, this.Pawn.Map);
@@ -91,7 +93,7 @@ namespace EMF
             storedEquipment.Clear();
             if (Pawn.equipment?.Primary != null)
             {
-                StoreCurrentPrimary();
+                StoreCurrentEquipment();
             }
 
             if (Pawn.apparel != null)
@@ -125,22 +127,55 @@ namespace EMF
             }
         }
 
-        private void StoreCurrentPrimary()
+        private void StoreCurrentEquipment()
         {
-            ThingWithComps equippedPRimary = Pawn.equipment.Primary;
-            Pawn.equipment.Remove(equippedPRimary);
-            storedEquipment.TryAddOrTransfer(equippedPRimary, false);
+            List<ThingWithComps> toStore = new List<ThingWithComps>();
+            foreach (var thing in Pawn.equipment.GetDirectlyHeldThings())
+            {
+                if (thing != transformationSource && thing is ThingWithComps thingWithComps)
+                {
+                    toStore.Add(thingWithComps);
+                }
+            }
+
+            foreach (var equiment in toStore)
+            {
+                Pawn.equipment.Remove(equiment);
+                storedEquipment.TryAddOrTransfer(equiment, false);
+            }
+        }
+        private void RestoreOriginalEquipmentAndApparel()
+        {
+            foreach (Thing item in storedEquipment.InnerListForReading.ToArray())
+            {
+                storedEquipment.Remove(item);
+
+                if (item is Apparel apparel)
+                {
+                    Pawn.apparel.Wear(apparel, false);
+                }
+                else if (item is ThingWithComps equipment)
+                {
+                    Pawn.equipment.AddEquipment(equipment);
+                }
+            }
         }
 
         private void StoreCurrentApparel()
         {
-            foreach (var item in Pawn.apparel.GetDirectlyHeldThings())
+            List<Apparel> toStore = new List<Apparel>();
+            foreach (var thing in Pawn.apparel.GetDirectlyHeldThings())
             {
-                if (item is Apparel apparel)
+                if (thing != transformationSource && thing is Apparel apparel)
                 {
-                    Pawn.apparel.Remove(apparel);
-                    this.storedEquipment.TryAddOrTransfer(apparel, false);
+                    toStore.Add(apparel);
                 }
+            }
+
+            foreach (var apparel in toStore)
+            {
+                Pawn.apparel.Remove(apparel);
+                storedEquipment.TryAddOrTransfer(apparel, false);
             }
         }
 
@@ -243,25 +278,10 @@ namespace EMF
             }
 
             storedEquipment.Clear();
+            transformationSource = null;
             isTransformed = false;
         }
 
-        private void RestoreOriginalEquipmentAndApparel()
-        {
-            foreach (Thing item in storedEquipment.InnerListForReading.ToArray())
-            {
-                storedEquipment.Remove(item);
-
-                if (item is Apparel apparel)
-                {
-                    Pawn.apparel.Wear(apparel, false);
-                }
-                else if (item is ThingWithComps equipment)
-                {
-                    Pawn.equipment.AddEquipment(equipment);
-                }
-            }
-        }
 
         private void RemoveGainedAbilities()
         {
@@ -300,36 +320,6 @@ namespace EMF
             transformationApparel.Clear();
         }
 
-        //public override IEnumerable<Gizmo> CompGetGizmos()
-        //{
-        //    if (Pawn.Faction != Faction.OfPlayer) 
-        //        yield break;
-
-        //    if (Prefs.DevMode)
-        //    {
-        //        if (isTransformed)
-        //        {
-        //            yield return new Command_Action
-        //            {
-        //                defaultLabel = "Revert",
-        //                defaultDesc = "Revert from your transformed state, restoring your original equipment.",
-        //                icon = TexButton.Minus,
-        //                action = () => DeactivateTransformation()
-        //            };
-        //        }
-        //        else
-        //        {
-        //            yield return new Command_Action
-        //            {
-        //                defaultLabel = "Transform",
-        //                defaultDesc = "Activate your power and transform.",
-        //                icon = TexButton.Add,
-        //                action = () => ActivateTransformation()
-        //            };
-        //        }
-        //    }
-        //}
-
         public void GetChildHolders(List<IThingHolder> outChildren)
         {
             ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, GetDirectlyHeldThings());
@@ -339,8 +329,6 @@ namespace EMF
         {
             return storedEquipment;
         }
-
-
         public override void CompExposeData()
         {
             base.CompExposeData();
@@ -351,6 +339,7 @@ namespace EMF
             Scribe_Collections.Look(ref addedAbilities, "addedAbilities", LookMode.Reference);
             Scribe_References.Look(ref transformationWeapon, "transformationWeapon");
             Scribe_Collections.Look(ref transformationApparel, "transformationApparel", LookMode.Reference);
+            Scribe_References.Look(ref transformationSource, "transformationSource");
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
@@ -363,16 +352,15 @@ namespace EMF
                     addedGenes = new List<Gene>();
                 }
 
-                if (addedHediffs == null)
+                if (addedAbilities == null)
                 {
                     addedAbilities = new List<Ability>();
                 }
 
-                if (addedHediffs == null)
+                if (transformationApparel == null)
                 {
                     transformationApparel = new List<Apparel>();
                 }
-
             }
         }
     }

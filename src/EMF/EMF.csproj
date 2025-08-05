@@ -88,6 +88,7 @@
     <Compile Include="Ability\Comps\CompProperties_ConsumeHediffStacks.cs" />
     <Compile Include="PawnBaseCompPatches.cs" />
     <Compile Include="Thing\Comps\CompProperties_AbilitySummonPawn.cs" />
+    <Compile Include="Thing\Comps\CompProperties_EquipmentToggleHediff.cs" />
     <Compile Include="Thing\Comps\CompProperties_EquippableAbility.cs" />
     <Compile Include="Ability\Comps\CompProperties_ResourceToggleHediff.cs" />
     <Compile Include="Def Extensions\ResourceAssociatedHediffExtension.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Interfaces\IStackableHediff.cs" />
     <Compile Include="JObs\JobDriver_DoWeaponTransformation.cs" />
     <Compile Include="Thing\Comps\CompProperties_Levelable.cs" />
+    <Compile Include="Thing\Comps\CompProperties_PawnContainer.cs" />
     <Compile Include="Thing\Comps\CompTransformingBase.cs" />
     <Compile Include="Thing\Comps\Trait\BaseTraitComp.cs" />
     <Compile Include="Thing\Comps\CompProperties_BuildingFromPawn.cs" />

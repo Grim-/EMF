@@ -4,6 +4,8 @@ namespace EMF
 {
 
 
+
+
     public class CompProperties_BiocodableBinding : CompProperties_SelectiveBiocodable
     {
         public bool automaticallyBind = true;

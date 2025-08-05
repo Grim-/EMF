@@ -28,6 +28,9 @@ namespace EMF
 
         public override DamageWorker.DamageResult Notify_ApplyMeleeDamageToTarget(LocalTargetInfo target, Pawn attacker, ref DamageWorker.DamageResult damageWorkerResult)
         {
+
+            Log.Message("Apply Hediff on Hit Notify_ApplyMeleeDamageToTarget");
+
             if (Props.ApplyOnTarget && target.Pawn != null)
             {
                 if (Rand.Range(0, 1) <= Props.ApplyChance)
