@@ -1,4 +1,6 @@
 ﻿using RimWorld;
+using System.Collections.Generic;
+using System.Linq;
 using Verse;
 
 namespace EMF
@@ -11,11 +13,11 @@ namespace EMF
 
     public class CompAbilityEffect_BaseJumpEffect : CompAbilityEffect
     {
-        IntVec3 startcell;
-        IntVec3 targetCell;
-        ThingFlyer thingFlyer;
-        bool pawnWasDrafted = false;
-        bool pawnWasSelected = false;
+        protected IntVec3 startcell;
+        protected IntVec3 targetCell;
+        protected ThingFlyer thingFlyer;
+        protected bool pawnWasDrafted = false;
+        protected bool pawnWasSelected = false;
         CompProperties_BaseJumpEffect Props => (CompProperties_BaseJumpEffect)props;
 
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
@@ -32,7 +34,7 @@ namespace EMF
                 thingFlyer = null;
             }
 
-            Map map = this.parent.pawn.Map;
+            Map map = this.parent.pawn.MapHeld;
             startcell = this.parent.pawn.Position;
             targetCell = target.Cell;
             pawnWasDrafted = this.parent.pawn.Drafted;

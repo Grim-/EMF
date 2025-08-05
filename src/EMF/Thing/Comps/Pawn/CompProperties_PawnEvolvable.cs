@@ -36,11 +36,6 @@ namespace EMF
         public bool HasPreviousForm => storedPreviousForm != null && innerContainer.Contains(storedPreviousForm);
         public bool HasNextForm => storedNextForm != null && innerContainer.Contains(storedNextForm);
 
-        public CompPawnEvolvable()
-        {
-            innerContainer = new ThingOwner<Thing>(this, true, LookMode.Deep, true);
-        }
-
         public bool CanEvolveNow
         {
             get
@@ -67,10 +62,16 @@ namespace EMF
 
         public bool CanDevolve => Props.canDevolve && innerContainer.Count > 0 && HasPreviousForm && !storedPreviousForm.Destroyed;
 
+        public CompPawnEvolvable()
+        {
+            innerContainer = new ThingOwner<Thing>(this, true, LookMode.Deep, true);
+        }
+
         public List<PawnKindDef> GetAvailableEvolutions()
         {
             Pawn pawn = parent as Pawn;
-            if (pawn == null) return new List<PawnKindDef>();
+            if (pawn == null) 
+                return new List<PawnKindDef>();
 
             if (Props.useEvolutionPaths && Props.evolutionPaths != null)
             {
@@ -326,8 +327,6 @@ namespace EMF
             ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, this.GetDirectlyHeldThings());
         }
 
-        private List<PawnKindDef> WorkingKeys = new List<PawnKindDef>();
-        private List<Pawn> WorkingValues = new List<Pawn>();
         public override void PostExposeData()
         {
             base.PostExposeData();

@@ -2,7 +2,9 @@
 
 namespace EMF
 {
-    public class ProjectileCompProperties_SpawnsThingRadius : ProjectileCompProperties_SpawnsThing
+
+
+    public class ProjectileCompProperties_SplashThingRadius : ProjectileCompProperties_SpawnsThing
     {
         public float radius = 3f;
         public int maxSpawnCount = -1;
@@ -10,15 +12,15 @@ namespace EMF
         public bool requiresLineOfSight = false;
         public bool onlyOnPassableTerrain = true;
 
-        public ProjectileCompProperties_SpawnsThingRadius()
+        public ProjectileCompProperties_SplashThingRadius()
         {
-            compClass = typeof(ProjectileComp_SpawnsThingRadius);
+            compClass = typeof(ProjectileComp_SplashThingRadius);
         }
     }
 
-    public class ProjectileComp_SpawnsThingRadius : ProjectileComp_SpawnsThing
+    public class ProjectileComp_SplashThingRadius : ProjectileComp_SpawnsThing
     {
-        new public ProjectileCompProperties_SpawnsThingRadius Props => (ProjectileCompProperties_SpawnsThingRadius)props;
+        new public ProjectileCompProperties_SplashThingRadius Props => (ProjectileCompProperties_SplashThingRadius)props;
 
         public override void PreImpact(Thing hitThing, bool blockedByShield)
         {

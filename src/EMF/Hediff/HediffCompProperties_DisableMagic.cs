@@ -1,4 +1,5 @@
-﻿using Verse;
+﻿using System.Collections.Generic;
+using Verse;
 
 namespace EMF
 {
@@ -16,5 +17,6 @@ namespace EMF
 
         public override string CompLabelInBracketsExtra => "magic disabled";
     }
+
 
 }

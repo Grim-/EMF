@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+  <Operation Class="PatchOperationSequence">
+    <operations>
+      <!-- MeleeWeapon_DamageMultiplier -->
+      <li Class="PatchOperationConditional">
+        <xpath>/Defs/StatDef[defName="MeleeWeapon_DamageMultiplier"]/parts</xpath>
+        <match Class="PatchOperationAdd">
+          <xpath>/Defs/StatDef[defName="MeleeWeapon_DamageMultiplier"]/parts</xpath>
+          <value>
+            <li Class="JJK.ZanpaktoDamageStatPart"/>
+          </value>
+        </match>
+        <nomatch Class="PatchOperationSequence">
+          <operations>
+            <li Class="PatchOperationAdd">
+              <xpath>/Defs/StatDef[defName="MeleeWeapon_DamageMultiplier"]</xpath>
+              <value>
+                <parts/>
+              </value>
+            </li>
+            <li Class="PatchOperationAdd">
+              <xpath>/Defs/StatDef[defName="MeleeWeapon_DamageMultiplier"]/parts</xpath>
+              <value>
+                <li Class="JJK.ZanpaktoDamageStatPart"/>
+              </value>
+            </li>
+          </operations>
+        </nomatch>
+      </li>
+
+      <!-- MeleeWeapon_CooldownMultiplier -->
+      <li Class="PatchOperationConditional">
+        <xpath>/Defs/StatDef[defName="MeleeWeapon_CooldownMultiplier"]/parts</xpath>
+        <match Class="PatchOperationAdd">
+          <xpath>/Defs/StatDef[defName="MeleeWeapon_CooldownMultiplier"]/parts</xpath>
+          <value>
+            <li Class="JJK.ZanpaktoCooldownStatPart"/>
+          </value>
+        </match>
+        <nomatch Class="PatchOperationSequence">
+          <operations>
+            <li Class="PatchOperationAdd">
+              <xpath>/Defs/StatDef[defName="MeleeWeapon_CooldownMultiplier"]</xpath>
+              <value>
+                <parts/>
+              </value>
+            </li>
+            <li Class="PatchOperationAdd">
+              <xpath>/Defs/StatDef[defName="MeleeWeapon_CooldownMultiplier"]/parts</xpath>
+              <value>
+                <li Class="JJK.ZanpaktoCooldownStatPart"/>
+              </value>
+            </li>
+          </operations>
+        </nomatch>
+      </li>
+
+      <!-- MeleeWeapon_AverageArmorPenetration -->
+      <li Class="PatchOperationConditional">
+        <xpath>/Defs/StatDef[defName="MeleeWeapon_AverageArmorPenetration"]/parts</xpath>
+        <match Class="PatchOperationAdd">
+          <xpath>/Defs/StatDef[defName="MeleeWeapon_AverageArmorPenetration"]/parts</xpath>
+          <value>
+            <li Class="JJK.ZanpaktoARPStatPart"/>
+          </value>
+        </match>
+        <nomatch Class="PatchOperationSequence">
+          <operations>
+            <li Class="PatchOperationAdd">
+              <xpath>/Defs/StatDef[defName="MeleeWeapon_AverageArmorPenetration"]</xpath>
+              <value>
+                <parts/>
+              </value>
+            </li>
+            <li Class="PatchOperationAdd">
+              <xpath>/Defs/StatDef[defName="MeleeWeapon_AverageArmorPenetration"]/parts</xpath>
+              <value>
+                <li Class="JJK.ZanpaktoARPStatPart"/>
+              </value>
+            </li>
+          </operations>
+        </nomatch>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

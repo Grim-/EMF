@@ -6,7 +6,6 @@ namespace EMF
 {
     public class HediffCompProperties_Transformation : HediffCompProperties
     {
-
         public EffecterDef transformationEffecter;
         public EffecterDef revertEffecter;
         public List<ThingDef> apparelToWear;

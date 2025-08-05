@@ -48,16 +48,5 @@ namespace EMF
                 DealDamageToThingsInCell(cell, targetMap);
             });
         }
-
-        protected override DamageInfo GetDamage(Pawn attacker, Thing victim)
-        {
-            return attacker.GetAttackDamageForPawn(
-                Props.damageDef,
-                Props.damage.RandomInRange,
-                0,
-                1,
-                Props.useWeaponDamageIfAvailable
-            );
-        }
     }
 }

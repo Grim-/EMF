@@ -5,6 +5,7 @@ using Verse;
 namespace EMF
 {
 
+
     public class CompProperties_BuildingFromPawn : CompProperties
     {
         public bool canReverseTransform = true;

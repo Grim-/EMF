@@ -7,15 +7,8 @@ namespace EMF
 {
     public abstract class CompProperties_AreaDamageBase : CompProperties_AbilityEffect
     {
-        public FloatRange damage = new FloatRange(1f, 1f);
-        public FloatRange armourPen = new FloatRange(1f, 1f);
-        public DamageDef damageDef;
-        public bool useWeaponDamageIfAvailable = false;
         public EffecterDef cellEffecterDef = null;
-        public EffecterDef damageffecterDef = null;
-
-        public FloatRange weaponDamageMult = new FloatRange(1f, 1f);
-
+        public DamageParameters damageParms = DamageParameters.Default();
         public FriendlyFireSettings friendlyFireParms = FriendlyFireSettings.HostileOnly();
         public TargetingParameters targetParms = TargetingParameters.ForAttackAny();
     }
@@ -56,27 +49,12 @@ namespace EMF
             {
                 if (this.Props.friendlyFireParms.CanTargetThing(this.parent.pawn, things) && this.Props.targetParms.CanTarget(things))
                 {
-                    if (this.Props.damageffecterDef != null)
+                    if (Props.damageParms != null)
                     {
-                        this.Props.damageffecterDef.Spawn(things.Position, map);
+                        Props.damageParms.DealDamageTo(this.parent.pawn, things);
                     }
-                    else 
-                        EffecterDefOf.Deflect_Metal.Spawn(things.Position, map);
-
-                    things.TakeDamage(GetDamage(this.parent.pawn, things));
                 }
             }
-        }
-
-
-        protected virtual DamageInfo GetDamage(Pawn attacker, Thing victim)
-        {
-            if (Props.useWeaponDamageIfAvailable && attacker.HasWeaponEquipped())
-                return attacker.equipment.PrimaryEq.GetWeaponDamage(attacker, this.Props.weaponDamageMult.RandomInRange);
-
-            float amount = Props.damage.RandomInRange;
-            var def = Props.damageDef ?? DamageDefOf.Blunt;
-            return new DamageInfo(def, amount, Props.armourPen.RandomInRange, -1, this.parent.pawn, null, (Props.useWeaponDamageIfAvailable && attacker.HasWeaponEquipped() ? attacker.equipment.PrimaryEq.parent.def : null));
         }
     }
 }

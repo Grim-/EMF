@@ -8,6 +8,7 @@ namespace EMF
     public class ActiveZoneDef : ThingDef
     {
         public int ZoneLifeTime = 1000;
+        public Color zoneColor = Color.white;
 
         public ActiveZoneDef()
         {
@@ -32,6 +33,11 @@ namespace EMF
         protected HashSet<Thing> previousThingsInZone = new HashSet<Thing>();
         public HashSet<Thing> ThingsInZoneRead => new HashSet<Thing>(previousThingsInZone);
         public HashSet<Pawn> PawnsInZoneRead => new HashSet<Pawn>(ThingsInZoneRead.Where(x=>  x is Pawn).Cast<Pawn>().ToHashSet());
+
+
+        protected Thing owner = null;
+        public Thing Owner => owner;
+
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             base.SpawnSetup(map, respawningAfterLoad);
@@ -70,6 +76,11 @@ namespace EMF
         public void SetZoneCells(List<IntVec3> cells)
         {
             ZoneCells = cells.ToList();
+        }
+
+        public void SetOwner(Thing owner)
+        {
+            this.owner = owner;
         }
 
         public void SetDamage(DamageDef damageDef, FloatRange damage)
@@ -162,7 +173,7 @@ namespace EMF
                 return;
             }
 
-            GenDraw.DrawFieldEdges(ZoneCells);
+            GenDraw.DrawFieldEdges(ZoneCells,  ActiveZoneDef.zoneColor);
         }
 
         public HashSet<Thing> GetCurrentThingsInZone(ref List<IntVec3> cells)
@@ -173,7 +184,7 @@ namespace EMF
             });
         }
 
-        public static ActiveZone SpawnZone(ActiveZoneDef activeZoneDef, IntVec3 SpawnPosition, List<IntVec3> ZoneCells, Map map)
+        public static ActiveZone SpawnZone(ActiveZoneDef activeZoneDef, IntVec3 SpawnPosition, List<IntVec3> ZoneCells, Map map, Thing zoneOwner)
         {
             if (activeZoneDef == null)
             {
@@ -188,6 +199,7 @@ namespace EMF
             ActiveZone zone = (ActiveZone)ThingMaker.MakeThing(activeZoneDef);
             zone.ZoneLifeTime = activeZoneDef.ZoneLifeTime;
             zone.SetZoneCells(ZoneCells);
+            zone.SetOwner(zoneOwner);
             zone = (ActiveZone)GenSpawn.Spawn(zone, SpawnPosition, map);
             return zone;
         }
@@ -200,6 +212,7 @@ namespace EMF
             Scribe_Values.Look(ref ZoneLifetimeTicks, "ZoneLifetimeTicks");
             Scribe_Defs.Look(ref DamageDef, "DamageDef");
             Scribe_Values.Look(ref Damage, "Damage");
+            Scribe_References.Look(ref owner, "Owner");
             Scribe_Collections.Look(ref previousThingsInZone, "previousThingsInZone", LookMode.Reference);
         }
     }

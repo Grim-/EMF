@@ -6,9 +6,6 @@ using Verse;
 
 namespace EMF
 {
-
-
-
     public class CompProperties_SelectiveBiocodable : CompProperties_Biocodable
     {
         public List<RequiredSkillLevel> requiredSkills;
@@ -29,7 +26,6 @@ namespace EMF
             compClass = typeof(CompSelectiveBiocodable);
         }
     }
-
 
     public class RequiredSkillLevel
     {

@@ -14,6 +14,9 @@ namespace EMF
 
         public static EventManager Instance => instance;
 
+        /// <summary>
+        /// Target, Attacker, DamageInfo, DamageResult
+        /// </summary>
         public event Func<Thing, Thing, DamageInfo, DamageWorker.DamageResult, DamageWorker.DamageResult> OnDamageDealt;
         public event Action<Pawn, DamageInfo> OnPawnDamageTaken;
         public event Action<Pawn, DamageInfo?, Hediff> OnPawnHediffGained;

@@ -6,8 +6,6 @@ using Verse.AI;
 
 namespace EMF
 {
-
-
     public class CompProperties_PawnTransformable : CompProperties
     {
         public ThingDef buildingDef;
@@ -90,7 +88,7 @@ namespace EMF
                 {
                     defaultLabel = "Transform",
                     defaultDesc = $"Transform into {Props.buildingDef.label}",
-                    action = delegate
+                    action = () =>
                     {
                         if (CanTransformNow)
                         {

@@ -7,12 +7,8 @@ namespace EMF
     {
         public int ticksBetweenDamage = 100;
         public int maxTargets = -1;
-
-        public FloatRange damage = new FloatRange(1, 1);
-        public DamageDef damageDef;
-
+        public DamageParameters damageParms;
         public EffecterDef targetDamageEffecterDef = null;
-
         public FriendlyFireSettings friendlyFireSettings = FriendlyFireSettings.AllFriendly();
 
         public CompProperties_ActiveZoneDamage()
@@ -36,24 +32,18 @@ namespace EMF
                 HashSet<Thing> things = ParentZone.GetCurrentThingsInZone(ref cells);
                 foreach (var item in things)
                 {
-                    if (!item.CanTargetThing(this.parent.Faction, Props.friendlyFireSettings))
-                    {
-                        continue;
-                    }
-
                     if (Props.maxTargets > 0 && currentTargetCount > Props.maxTargets)
                     {
                         break;
                     }
 
-                    if (item.def.useHitPoints)
+                    if (Props.friendlyFireSettings.CanTargetThing(item, this.ParentZone.Owner))
                     {
                         if (Props.targetDamageEffecterDef != null)
                         {
                             Props.targetDamageEffecterDef.Spawn(item, item.Map);
                         }
-
-                        item.TakeDamage(new DamageInfo(Props.damageDef, Props.damage.RandomInRange));
+                        Props.damageParms.DealDamageTo(this.ParentZone, item);
                         currentTargetCount++;
 
                     }

@@ -36,7 +36,7 @@ namespace EMF
                 var mote = (MoteDualAttached)ThingMaker.MakeThing(Props.effectMote);
                 GenSpawn.Spawn(mote, parent.pawn.Position, map, WipeMode.Vanish);
                 mote.Attach(new TargetInfo(parent.pawn.Position, map), new TargetInfo(target.Cell, map));
-                mote.linearScale = new Vector3(4f, 1f, (parent.pawn.DrawPos - target.Cell.ToVector3Shifted()).MagnitudeHorizontal());
+                mote.linearScale = new Vector3(Props.width, 1f, (parent.pawn.DrawPos - target.Cell.ToVector3Shifted()).MagnitudeHorizontal());
             }
 
             StageVisualEffect.CreateStageEffect(GetAffectedCells(this.parent.pawn.Position, target.Cell, this.parent.pawn.Map).ToList(), map, Random.Range(8, 15), (cell, targetMap, sectionIndex) =>
@@ -45,7 +45,7 @@ namespace EMF
                 {
                     if (this.Props.friendlyFireParms.CanTargetThing(this.parent.pawn, things) && this.Props.targetParms.CanTarget(things))
                     {
-                        things.TakeDamage(GetDamage(this.parent.pawn, things));
+                        DealDamageToThingsInCell(cell, targetMap);
                     }
                 }
             });

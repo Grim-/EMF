@@ -4,6 +4,7 @@ using Verse;
 
 namespace EMF
 {
+
     public class HealParameters
     {
         public bool canHealBloodloss = true;

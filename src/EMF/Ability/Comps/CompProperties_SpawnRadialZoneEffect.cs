@@ -21,7 +21,7 @@ namespace EMF
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
         {
             base.Apply(target, dest);
-            ActiveZone zone = ActiveZone.SpawnZone(Props.zoneDef, target.Cell, GenRadial.RadialCellsAround(target.Cell, Props.radius, true).ToList(), this.parent.pawn.Map);
+            ActiveZone zone = ActiveZone.SpawnZone(Props.zoneDef, target.Cell, GenRadial.RadialCellsAround(target.Cell, Props.radius, true).ToList(), this.parent.pawn.Map, this.parent.pawn);
         }
 
 

@@ -8,11 +8,21 @@ using Verse.AI;
 
 namespace EMF
 {
+    public class TransformableForm
+    {
+        public ThingDef thingDef;
+        public PawnKindDef pawnKindDef;
+
+        public bool IsPawn => pawnKindDef != null;
+        public bool IsThing => thingDef != null && pawnKindDef == null;
+
+        public string Label => IsPawn ? pawnKindDef.LabelCap : thingDef?.LabelCap ?? "Unknown";
+        public Texture2D Icon => IsPawn ? pawnKindDef.race.uiIcon : thingDef?.uiIcon;
+    }
+
     public class CompProperties_TransformingThing : CompProperties
     {
-        public List<ThingDef> transformableForms = new List<ThingDef>();
-        public bool allowReversion = true;
-        public bool stackTransformations = true;
+        public List<TransformableForm> transformableForms = new List<TransformableForm>();
 
         public CompProperties_TransformingThing()
         {
@@ -20,211 +30,219 @@ namespace EMF
         }
     }
 
-    public class CompTransformingThing : ThingComp, IThingHolder, IDrawEquippedGizmos
+    public class CompTransformingThing : CompTransformingBase, IDrawEquippedGizmos
     {
-        protected ThingOwner<Thing> innerContainer;
-
-        protected Pawn EquipOwner = null;
         public CompProperties_TransformingThing Props => (CompProperties_TransformingThing)props;
-        public bool HasPrevious => !innerContainer.NullOrEmpty();
-        public bool CanRevert => HasPrevious && Props.allowReversion;
 
-        public CompTransformingThing()
-        {
-            innerContainer = new ThingOwner<Thing>(this, false, LookMode.Deep);
-        }
+        public bool CanRevert => HasPrevious;
 
         public override void Notify_Equipped(Pawn pawn)
         {
             base.Notify_Equipped(pawn);
-            EquipOwner = pawn;
         }
 
         public override void Notify_Unequipped(Pawn pawn)
         {
             base.Notify_Unequipped(pawn);
-            EquipOwner = null;
+            OriginalEquipOwner = null;
         }
 
-        public bool CanTransformTo(ThingDef targetDef)
+        public bool CanTransformTo(TransformableForm form)
         {
-            if (targetDef == null) 
+            if (form == null)
                 return false;
 
-            if (targetDef == parent.def)
+            // Can't transform to current form
+            if (parent.def == form.thingDef)
                 return false;
 
-            return Props.transformableForms.Contains(targetDef);
+            return Props.transformableForms.Contains(form);
         }
 
-        public Thing TransformTo(ThingDef targetDef)
+        public Thing TransformTo(TransformableForm form)
         {
-            if (!CanTransformTo(targetDef))
+            if (!CanTransformTo(form))
                 return null;
 
-            Thing newThing = ThingMaker.MakeThing(targetDef, parent.Stuff);
-            if (newThing == null)
-                return null;
+            ThingWithComps targetForm = null;
 
-            // Transfer basic properties
-            newThing.stackCount = parent.stackCount;
-            newThing.HitPoints = Mathf.RoundToInt(parent.HitPoints * ((float)targetDef.BaseMaxHitPoints / parent.def.BaseMaxHitPoints));
-
-            if (this.parent.TryGetQuality(out QualityCategory quality))
+            // Check if we already have this form stored
+            if (HasNext && MatchesForm(storedNextForm, form))
             {
-                newThing.TryGetComp<CompQuality>()?.SetQuality(quality, ArtGenerationContext.Colony);
+                targetForm = storedNextForm;
             }
-
-            // Handle transformation stacking
-            if (Props.stackTransformations && newThing.TryGetComp(out CompTransformingThing transformingThing))
+            else
             {
-                Thing snapshot = CreateSnapshot();
-                transformingThing.innerContainer.TryAddOrTransfer(snapshot, false);
-            }
+                targetForm = CreateForm(form);
+                if (targetForm == null)
+                    return null;
 
-            // Check if equipped before transforming
-            Pawn equipper = null;
-            if (parent is ThingWithComps equipment && equipment.ParentHolder is Pawn_EquipmentTracker tracker)
-            {
-                equipper = tracker.pawn;
-            }
+                TransferBasicProperties(parent, targetForm);
 
-            // Replace in world
-            if (parent.Spawned)
-            {
-                IntVec3 position = parent.Position;
-                Map map = parent.Map;
-                Rot4 rotation = parent.Rotation;
-
-                parent.DeSpawn();
-                GenSpawn.Spawn(newThing, position, map, rotation);
-            }
-            else if (equipper != null && newThing is ThingWithComps newEquipment)
-            {
-                // Was equipped, remove old and equip new
-                equipper.equipment.Remove((ThingWithComps)parent);
-                equipper.equipment.AddEquipment(newEquipment);
-            }
-
-            return newThing;
-        }
-
-        private Thing CreateSnapshot()
-        {
-            Thing snapshot = ThingMaker.MakeThing(parent.def, parent.Stuff);
-            snapshot.stackCount = parent.stackCount;
-            snapshot.HitPoints = parent.HitPoints;
-
-            if (parent.TryGetQuality(out QualityCategory quality))
-            {
-                snapshot.TryGetComp<CompQuality>()?.SetQuality(quality, ArtGenerationContext.Colony);
-            }
-
-            return snapshot;
-        }
-
-        public Thing Revert()
-        {
-            if (!CanRevert)
-                return null;
-
-            Thing previousThing = innerContainer.First();
-            innerContainer.Remove(previousThing);
-
-            // Check if equipped before reverting
-            Pawn equipper = null;
-            if (parent is ThingWithComps equipment && equipment.ParentHolder is Pawn_EquipmentTracker tracker)
-            {
-                equipper = tracker.pawn;
-            }
-
-            if (parent.Spawned)
-            {
-                IntVec3 position = parent.Position;
-                Map map = parent.Map;
-                Rot4 rotation = parent.Rotation;
-
-                parent.DeSpawn();
-                GenSpawn.Spawn(previousThing, position, map, rotation);
-            }
-            else if (equipper != null && previousThing is ThingWithComps previousEquipment)
-            {
-                // Was equipped, remove current and equip previous
-                equipper.equipment.Remove((ThingWithComps)parent);
-                equipper.equipment.AddEquipment(previousEquipment);
-            }
-
-            return previousThing;
-        }
-
-        public override string CompInspectStringExtra()
-        {
-            var baseString = base.CompInspectStringExtra();
-
-            baseString += $"forms {Props.transformableForms.Count}";
-            if (HasPrevious && CanRevert)
-            {
-                baseString += $"\nCan revert to: {innerContainer.First().def.LabelCap}";
-            }
-
-            return baseString;
-        }
-
-
-
-        public void GetChildHolders(List<IThingHolder> outChildren)
-        {
-            ThingOwnerUtility.AppendThingHoldersFromThings(outChildren, GetDirectlyHeldThings());
-        }
-
-        public ThingOwner GetDirectlyHeldThings()
-        {
-            return innerContainer;
-        }
-
-        public override void PostExposeData()
-        {
-            base.PostExposeData();
-            Scribe_Deep.Look(ref innerContainer, "innerContainer", this);
-
-            if (Scribe.mode == LoadSaveMode.PostLoadInit)
-            {
-                if (innerContainer == null)
+                if (targetForm.TryGetComp(out CompTransformingThing transformingComp))
                 {
-                    innerContainer = new ThingOwner<Thing>(this, false, LookMode.Deep);
+                    transformingComp.OriginalEquipOwner = this.OriginalEquipOwner ?? GetEquipper();
                 }
+            }
+
+            return Transform(targetForm, isReverting: false);
+        }
+
+        private bool MatchesForm(ThingWithComps thing, TransformableForm form)
+        {
+            if (form.IsPawn && thing is Pawn pawn)
+            {
+                return pawn.kindDef == form.pawnKindDef;
+            }
+            else if (form.IsThing)
+            {
+                return thing.def == form.thingDef;
+            }
+            return false;
+        }
+
+        private ThingWithComps CreateForm(TransformableForm form)
+        {
+            if (form.IsPawn)
+            {
+                var request = new PawnGenerationRequest(
+                    form.pawnKindDef,
+                    faction: OriginalEquipOwner?.Faction ?? Faction.OfPlayer,
+                    context: PawnGenerationContext.NonPlayer,
+                    forceGenerateNewPawn: true,
+                    allowDead: false,
+                    allowDowned: false,
+                    canGeneratePawnRelations: false,
+                    colonistRelationChanceFactor: 0f
+                );
+
+                return PawnGenerator.GeneratePawn(request);
+            }
+            else if (form.IsThing)
+            {
+                return (ThingWithComps)ThingMaker.MakeThing(form.thingDef, parent.Stuff);
+            }
+
+            return null;
+        }
+
+        protected override void SpawnForm(ThingWithComps form)
+        {
+            SpawnFormWithContext(form, GetEquipper());
+        }
+
+        private void TransferBasicProperties(Thing sourceThing, Thing targetThing)
+        {
+            if (targetThing.def.stackLimit > 1 && sourceThing.def.stackLimit > 1 && !(targetThing is Pawn))
+            {
+                targetThing.stackCount = sourceThing.stackCount;
+            }
+
+            if (sourceThing.TryGetQuality(out QualityCategory quality))
+            {
+                targetThing.TryGetComp<CompQuality>()?.SetQuality(quality, ArtGenerationContext.Colony);
             }
         }
 
         public IEnumerable<Gizmo> GetEquippedGizmos()
         {
-            if (CanRevert)
+            if (parent is Pawn)
             {
-                yield return new Command_Action
-                {
-                    defaultLabel = "Revert",
-                    defaultDesc = $"Revert to {innerContainer.First().def.LabelCap}",
-                    icon = innerContainer.First().def.uiIcon,
-                    action = () => Revert()
-                };
+                foreach (var gizmo in GetPawnGizmos())
+                    yield return gizmo;
+            }
+            else if (GetEquipper() != null)
+            {
+                foreach (var gizmo in GetEquipmentGizmos())
+                    yield return gizmo;
+            }
+        }
+
+        public override IEnumerable<Gizmo> CompGetGizmosExtra()
+        {
+            if (parent is Pawn)
+            {
+                foreach (var gizmo in GetPawnGizmos())
+                    yield return gizmo;
+            }
+        }
+
+        private Command_Action CreateRevertAction()
+        {
+            return new Command_Action
+            {
+                defaultLabel = "Revert",
+                defaultDesc = $"Revert to {storedPreviousForm.def.LabelCap}",
+                icon = storedPreviousForm.def.uiIcon,
+                action = () => Revert()
+            };
+        }
+
+        private Command_Action CreateTransformAction(TransformableForm form)
+        {
+            return new Command_Action
+            {
+                defaultLabel = $"Transform: {form.Label}",
+                defaultDesc = form.IsPawn ? form.pawnKindDef.race.description : form.thingDef?.description ?? "",
+                icon = form.Icon,
+                action = () => TransformTo(form)
+            };
+        }
+
+        private IEnumerable<Gizmo> GetPawnGizmos()
+        {
+            if (CanRevert && storedPreviousForm != null)
+            {
+                yield return CreateRevertAction();
             }
 
-            foreach (var formDef in Props.transformableForms)
+            foreach (var form in Props.transformableForms)
             {
-                yield return new Command_Action
-                {
-                    defaultLabel = $"Transform: {formDef.LabelCap}",
-                    defaultDesc = formDef.description,
-                    icon = formDef.uiIcon,
-                    action = () =>
-                    {
-                        int formIndex = Props.transformableForms.IndexOf(formDef);
-                        Job job = JobMaker.MakeJob(EMFDefOf.EMF_JobDoWeaponTransformation, this.parent);
-                        job.count = formIndex;
-                        this.EquipOwner.jobs.StartJob(job);
-                    }
-                };
+                if (parent.def == form.thingDef)
+                    continue;
+
+                yield return CreateTransformAction(form);
             }
+        }
+
+        private IEnumerable<Gizmo> GetEquipmentGizmos()
+        {
+            if (CanRevert && storedPreviousForm != null)
+            {
+                yield return CreateRevertAction();
+            }
+
+            foreach (var form in Props.transformableForms)
+            {
+                if (parent.def == form.thingDef)
+                    continue;
+
+                yield return CreateTransformAction(form);
+            }
+        }
+
+        public override string CompInspectStringExtra()
+        {
+            var parts = new List<string>();
+
+            parts.Add($"Forms: {Props.transformableForms.Count}");
+
+            if (HasPrevious && CanRevert)
+            {
+                parts.Add($"Can revert to: {storedPreviousForm.def.LabelCap}");
+            }
+
+            if (HasNext)
+            {
+                parts.Add($"Stored next: {storedNextForm.def.LabelCap}");
+            }
+
+            return string.Join("\n", parts);
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
         }
     }
 }

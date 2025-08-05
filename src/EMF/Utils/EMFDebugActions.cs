@@ -35,6 +35,46 @@ namespace EMF
             });
         }
 
+        [DebugAction("EMF Utils", "View Structure Layout", false, false, false, false, false, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 100)]
+        private static List<DebugActionNode> ViewStructureLayout()
+        {
+            List<DebugActionNode> list = new List<DebugActionNode>();
+
+            foreach (StructureLayoutDef layoutDef in DefDatabase<StructureLayoutDef>.AllDefs)
+            {
+                list.Add(new DebugActionNode(layoutDef.defName, DebugActionType.Action, () =>
+                {
+                    Find.WindowStack.Add(new Window_StructureLayoutViewer(layoutDef));
+                }));
+            }
+
+            return list;
+        }
+
+
+        [DebugAction("EMF Utils", "REmove Ability", actionType = DebugActionType.ToolMap, allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        public static void RemoveAbility()
+        {
+            Find.Targeter.BeginTargeting(new TargetingParameters()
+            {
+                canTargetPawns = true,
+            },
+            (LocalTargetInfo target) =>
+            {
+                if (target.Thing != null && target.Thing is Pawn pawn && pawn.abilities != null && pawn.abilities.abilities != null)
+                {
+                    List<FloatMenuOption> list = new List<FloatMenuOption>();
+                    foreach (var ability in pawn.abilities.abilities)
+                    {
+                        list.Add(new FloatMenuOption(ability.def.defName, () =>
+                        {
+                            pawn.abilities.RemoveAbility(ability.def);
+                        }));
+                    }
+                    Find.WindowStack.Add(new FloatMenu(list));
+                }
+            });
+        }
 
         [DebugAction("EMF Utils", "Spawn in grid", false, false, false, false, false, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 100)]
         private static List<DebugActionNode> SetTerrainRect()

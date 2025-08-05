@@ -6,7 +6,7 @@ namespace EMF
 {
     public class JobDriver_DoWeaponTransformation : JobDriver
     {
-        public ThingDef TargetDef => job.count >= 0 && job.count < Props.transformableForms.Count
+        public TransformableForm TargetDef => job.count >= 0 && job.count < Props.transformableForms.Count
             ? Props.transformableForms[job.count]
             : null;
 
