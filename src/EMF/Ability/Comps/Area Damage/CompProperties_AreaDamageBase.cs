@@ -9,7 +9,7 @@ namespace EMF
     {
         public EffecterDef cellEffecterDef = null;
         public DamageParameters damageParms = DamageParameters.Default();
-        public FriendlyFireSettings friendlyFireParms = FriendlyFireSettings.HostileOnly();
+        public FriendlyFireSettings friendlyFireParms = FriendlyFireSettings.AllAttack();
         public TargetingParameters targetParms = TargetingParameters.ForAttackAny();
     }
 

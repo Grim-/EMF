@@ -15,7 +15,7 @@ namespace EMF
     {
         public ProjectileWithComps ParentAsProjectile => (ProjectileWithComps)parent;
 
-        protected Thing Launcher;
+        //protected Thing Launcher;
 
         public virtual void PostLaunch(Thing launcher, Vector3 origin, LocalTargetInfo usedTarget, LocalTargetInfo intendedTarget, ProjectileHitFlags hitFlags, bool preventFriendlyFire, Thing equipment, ThingDef targetCoverDef)
         {
@@ -24,7 +24,7 @@ namespace EMF
                 return;
             }
 
-            Launcher = launcher;
+            //Launcher = launcher;
         }
 
         public virtual void PostFlightTick()

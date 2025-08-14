@@ -6,8 +6,8 @@ namespace EMF
     public class DamageParameters
     {
         public DamageDef damageDef;
-        public FloatRange damageAmount;
-        public FloatRange armourPenAmount;
+        public FloatRange damageAmount = new FloatRange(1, 1);
+        public FloatRange armourPenAmount = new FloatRange(0, 0);
         public bool useWeaponDamageIfAvailable = false;
         public EffecterDef damageEffecterDef = null;
 
@@ -37,11 +37,13 @@ namespace EMF
 
         public void DealDamageTo(Thing Attacker, Thing Target)
         {
-            DamageInfo damageInfo = new DamageInfo(damageDef, damageAmount.RandomInRange, armourPenAmount.RandomInRange, -1, Attacker);
+            DamageDef damageDefToUse = damageDef != null ? damageDef : DamageDefOf.AcidBurn;
+
+            DamageInfo damageInfo = new DamageInfo(damageDefToUse, damageAmount.RandomInRange, armourPenAmount.RandomInRange, -1, Attacker);
 
             if (Attacker is Pawn attackerPawn)
             {
-                damageInfo = attackerPawn.GetAttackDamageForPawn(damageDef, 
+                damageInfo = attackerPawn.GetAttackDamageForPawn(damageDefToUse, 
                     damageAmount.RandomInRange, 
                     armourPenAmount.RandomInRange, 
                     weaponDamageMult.RandomInRange, 
@@ -54,6 +56,10 @@ namespace EMF
                 if (damageEffecterDef != null)
                 {
                     damageEffecterDef.Spawn(Target.Position, Target.Map);
+                }
+                else
+                {
+                    EffecterDefOf.ImpactSmallDustCloud.Spawn(Target.Position, Target.Map);
                 }
 
                 Target.TakeDamage(damageInfo);

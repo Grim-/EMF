@@ -129,6 +129,11 @@ namespace EMF
             ConsumeResource();
         }
 
+        public override IEnumerable<Command> GetGizmos()
+        {
+            return base.GetGizmos();
+        }
+
         public virtual float GetDamageScalingMultiplier()
         {
             if (ResourceDef == null || ResourceDef.resourceDef == null)

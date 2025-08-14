@@ -272,12 +272,11 @@ namespace EMF
                 text += "\n\nMaintenance Costs:";
                 foreach (var cost in maintenanceCosts)
                 {
-                    string costType = cost.isStance ? "Stance" : "Ability";
-                    text += $"\n• {cost.source} ({costType}): {cost.cost:F1} every {cost.interval.ToStringTicksToPeriod()}";
+                    text += $"\n• {cost.source} (Ability): {cost.cost * basicResourceGene.CostMult:F1} every {cost.interval.ToStringTicksToPeriod()}";
                 }
 
-                float totalMaintenance = maintenanceCosts.Sum(x => x.cost);
-                text += $"\nTotal: {totalMaintenance:F1} per interval";
+                float totalMaintenance = maintenanceCosts.Sum(x => x.cost) * basicResourceGene.CostMult;
+                text += $"\nTotal: {totalMaintenance:F1}";
             }
 
             var additionalResources = GetAdditionalResources();

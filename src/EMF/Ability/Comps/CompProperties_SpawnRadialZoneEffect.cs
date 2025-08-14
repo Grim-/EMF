@@ -31,4 +31,6 @@ namespace EMF
             GenDraw.DrawRadiusRing(target.Cell, Props.radius, Color.cyan);
         }
     }
+
+
 }

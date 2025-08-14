@@ -10,7 +10,7 @@ namespace EMF
         public float maxValue = 100f;
         public float targetValue = 0.5f;
         public bool isLocked = false;
-        public bool isRegenEnabled = false;
+        public bool isRegenEnabled = true;
         public int currentRegenTick = 0;
         public float totalResourceUsed = 0;
         public bool enableResource = true;

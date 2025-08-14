@@ -9,8 +9,6 @@ using Verse;
 
 namespace EMF
 {
-
-
     public class EffecterDefEditorWindow : Window
     {
         private List<EffecterDef> allEffecterDefs;

@@ -13,6 +13,18 @@ namespace EMF
 
         public bool CanTargetThing(Thing targetThing, Thing attackerThing)
         {
+            if (attackerThing == null)
+            {
+                Log.Error("Attack is null for FriendlyFireSettings : CanTargetThing");
+                return false;
+            }
+
+            if (targetThing == null)
+            {
+                Log.Error("Target is null for FriendlyFireSettings : CanTargetThing");
+                return false;
+            }
+
             if (!canTargetSelf && targetThing == attackerThing)
             {
                 return false;

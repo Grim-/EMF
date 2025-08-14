@@ -41,13 +41,7 @@ namespace EMF
 
             StageVisualEffect.CreateStageEffect(GetAffectedCells(this.parent.pawn.Position, target.Cell, this.parent.pawn.Map).ToList(), map, Random.Range(8, 15), (cell, targetMap, sectionIndex) =>
             {
-                foreach (var things in cell.GetThingList(targetMap))
-                {
-                    if (this.Props.friendlyFireParms.CanTargetThing(this.parent.pawn, things) && this.Props.targetParms.CanTarget(things))
-                    {
-                        DealDamageToThingsInCell(cell, targetMap);
-                    }
-                }
+                DealDamageToThingsInCell(cell, targetMap);
             });
         }
     }

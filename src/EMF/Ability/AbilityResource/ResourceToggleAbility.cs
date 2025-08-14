@@ -1,4 +1,6 @@
 ﻿using RimWorld;
+using System;
+using System.Collections.Generic;
 using Verse;
 
 namespace EMF
@@ -44,7 +46,7 @@ namespace EMF
             get
             {
                 //if it has a cooldown and the toggle is active, allow deactivating regardless of cooldown
-                if (this.OnCooldown && _IsActive)
+                if (IsActive)
                 {
                     return true;
                 }
@@ -57,7 +59,7 @@ namespace EMF
             get
             {
                 //if it has a cooldown and the toggle is active, allow deactivating regardless of cooldown
-                if (this.OnCooldown && _IsActive)
+                if (IsActive)
                 {
                     return true;
                 }
@@ -65,15 +67,6 @@ namespace EMF
             }
         }
 
-        public override bool GizmoDisabled(out string reason)
-        {
-            if (_IsActive)
-            {
-                reason = "";
-                return false;
-            }
-            return base.GizmoDisabled(out reason);
-        }
         public override string Tooltip
         {
             get
@@ -92,20 +85,21 @@ namespace EMF
 
         public override bool Activate(LocalTargetInfo target, LocalTargetInfo dest)
         {
-            if (_IsActive)
+            if (IsActive)
             {
                 DeActivate();
+                return false;
             }
             else
             {
-                if (resourceGene.Has(ResourceDef.resourceDef, ResourceDef.resourceMaintainCost))
+                if (resourceGene.Has(ResourceDef.resourceDef, ResourceDef.resourceCost))
                 {
-                    resourceGene.Consume(ResourceDef.resourceDef, ResourceDef.resourceMaintainCost);
+                    resourceGene.Consume(ResourceDef.resourceDef, ResourceDef.resourceCost);
                     Activate();
+                    return false;
                 }
-
+                return false;
             }
-            return base.Activate(target, dest);
         }
 
         public override void AbilityTick()
@@ -162,18 +156,41 @@ namespace EMF
 
         protected virtual void OnActivated()
         {
-            foreach (var item in this.CompsOfType<BaseToggleAbilityComp>())
+            foreach (var item in this.CompsOfType<CompAbilityEffect_Toggleable>())
             {
-                item.OnParentActivated();
+                item.OnToggleOn();
             }
         }
 
         protected virtual void OnDeactivated()
         {
-            foreach (var item in this.CompsOfType<BaseToggleAbilityComp>())
+            foreach (var item in this.CompsOfType<CompAbilityEffect_Toggleable>())
             {
-                item.OnParentDeactivated();
+                item.OnToggleOff();
             }
+        }
+
+
+        public override IEnumerable<Command> GetGizmos()
+        {
+            //return base.GetGizmos();
+            if (this.gizmo == null)
+            {
+                this.gizmo = new Command_ToggleAbility(this, this.pawn);
+                this.gizmo.Order = this.def.uiOrder;
+            }
+
+            yield return gizmo;
+        }
+
+        public override bool GizmoDisabled(out string reason)
+        {
+            if (_IsActive)
+            {
+                reason = "";
+                return false;
+            }
+            return base.GizmoDisabled(out reason);
         }
     }
 }

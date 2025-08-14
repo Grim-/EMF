@@ -2,6 +2,9 @@
 
 namespace EMF
 {
+
+
+
     public abstract class HediffCompProperties_BaseInterval : HediffCompProperties
     {
         public int intervalTicks = 2400;

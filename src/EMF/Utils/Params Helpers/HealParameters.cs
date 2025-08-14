@@ -20,10 +20,10 @@ namespace EMF
         {
             return (Hediff h) =>
             {
-                //if (!h.def.isBad)
-                //{
-                //    return false;
-                //}
+                if (!h.def.everCurableByItem)
+                {
+                    return false;
+                }
 
                 if (h.def == HediffDefOf.BloodLoss && canHealBloodloss)
                     return true;
@@ -54,7 +54,28 @@ namespace EMF
                 return false;
             };
         }
-
+        public bool HasAnythingToHeal(Pawn pawn)
+        {
+            foreach (Hediff h in pawn.health.hediffSet.hediffs)
+            {
+                if (h.def == HediffDefOf.BloodLoss && canHealBloodloss)
+                    return true;
+                if (h.def.IsAddiction && canHealAddictions)
+                    return true;
+                if (h.def.isInfection && canHealInfections)
+                    return true;
+                if (h is Hediff_MissingPart && canHealMissingParts)
+                    return true;
+                if (h.def.chronic && canHealChronicConditions)
+                    return true;
+                if (h is Hediff_Injury injury && canHealInjuries)
+                {
+                    if (!injury.IsPermanent() || canHealPermanentInjuries)
+                        return true;
+                }
+            }
+            return false;
+        }
         public static HealParameters InjuriesOnly()
         {
             return new HealParameters

@@ -8,8 +8,7 @@ namespace EMF
 {
     public class ProjectileCompProperties_PeriodicAOEDamage : ProjectileCompProperties
     {
-        public DamageDef damageDef;
-        public FloatRange damageAmount = new FloatRange(5f, 5f);
+        public DamageParameters damageParms;
         public EffecterDef damageEffecterDef = null;
         public float radius = 1.9f;
         public int tickInterval = 60;
@@ -27,7 +26,6 @@ namespace EMF
 
     public class ProjectileComp_PeriodicAOEDamage : ProjectileComp
     {
-        private Thing launcher;
         private Dictionary<Thing, int> lastDamagedTicks = new Dictionary<Thing, int>();
 
         public ProjectileCompProperties_PeriodicAOEDamage Props => (ProjectileCompProperties_PeriodicAOEDamage)props;
@@ -77,7 +75,7 @@ namespace EMF
             {
                 foreach (var thing in currentPosition.GetThingList(map).ToList())
                 {
-                    if (Props.friendlyFireSettings.CanTargetThing(thing, this.Launcher))
+                    if (Props.friendlyFireSettings.CanTargetThing(thing, this.ParentAsProjectile.Launcher))
                     {
 
                         if (Props.damageEffecterDef != null)
@@ -86,8 +84,7 @@ namespace EMF
                         }
 
 
-                        DamageInfo damage = new DamageInfo(Props.damageDef != null ? Props.damageDef : DamageDefOf.Bomb, Props.damageAmount.RandomInRange);
-                        thing.TakeDamage(damage);
+                        Props.damageParms.DealDamageTo(this.ParentAsProjectile.Launcher, thing);
                         lastDamagedTicks[thing] = Find.TickManager.TicksGame;
                     }
                 }
@@ -98,7 +95,7 @@ namespace EMF
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_References.Look(ref launcher, "launcher");
+            //Scribe_References.Look(ref launcher, "launcher");
             Scribe_Collections.Look(ref lastDamagedTicks, "lastDamagedTicks", LookMode.Reference, LookMode.Value);
         }
     }

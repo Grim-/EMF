@@ -4,18 +4,20 @@ using Verse;
 
 namespace EMF
 {
-    public class CompProperties_EquipmentToggleHediff : CompProperties_BasePawnComp
+    public class CompProperties_EquipmentToggleTransformation : CompProperties_BasePawnComp
     {
         public HediffDef hediffDef;
-        public CompProperties_EquipmentToggleHediff()
+        public int damagePerUse = 0;
+
+        public CompProperties_EquipmentToggleTransformation()
         {
-            compClass = typeof(Comp_EquipmentToggleHediff);
+            compClass = typeof(Comp_EquipmentToggleTransformation);
         }
     }
 
-    public class Comp_EquipmentToggleHediff : Comp_BasePawnComp
+    public class Comp_EquipmentToggleTransformation : Comp_BasePawnComp
     {
-        private CompProperties_EquipmentToggleHediff Props => (CompProperties_EquipmentToggleHediff)props;
+        private CompProperties_EquipmentToggleTransformation Props => (CompProperties_EquipmentToggleTransformation)props;
         protected Hediff AppliedHediff = null;
         protected bool IsApplied => AppliedHediff != null;
         public override void Notify_Unequipped(Pawn pawn)
@@ -50,6 +52,14 @@ namespace EMF
                     }
 
                     EquippedPawn.health.hediffSet.AddDirect(AppliedHediff);
+
+                    if (Props.damagePerUse > 0)
+                    {
+                        if (this.parent.def.useHitPoints)
+                        {
+                            this.parent.HitPoints -= Props.damagePerUse;
+                        }
+                    }
                 }
             }
         }
@@ -76,9 +86,9 @@ namespace EMF
         {
             yield return new Command_Toggle()
             {
-                defaultLabel = IsApplied ? "Remove" : "Apply",
+                defaultLabel = IsApplied ? "Deactivate" : "Activate",
                 icon = this.parent.def.GetUIIconForStuff(this.parent.Stuff),
-                defaultDesc = $"Enable or disable {Props.hediffDef.LabelCap}",
+                defaultDesc = $"Enable or disable {Props.hediffDef.LabelCap}" + (Props.damagePerUse > 0 ? $" and causes {Props.damagePerUse} each time it is activated" : ""),
                 toggleAction = () =>
                 {
                     Toggle();

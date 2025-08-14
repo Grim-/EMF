@@ -17,6 +17,67 @@ namespace EMF
         }
 
 
+        [HarmonyPatch(typeof(ITab_Pawn_Gear), "IsVisible", MethodType.Getter)]
+        public static class Patch_ITab_Pawn_Gear
+        {
+            public static bool Prefix(ITab_Pawn_Gear __instance, ref bool __result)
+            {
+                Thing thing = Find.Selector.SingleSelectedThing;
+
+                if (thing != null && thing is Pawn selectedPawn)
+                {
+                    if (selectedPawn.Faction == Faction.OfPlayer && !selectedPawn.RaceProps.Humanlike && selectedPawn.IsASummon(out var comp))
+                    {
+                        __result = false;
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(Pawn), "WorkTypeIsDisabled")]
+        public static class Pawn_WorkTypeIsDisabled_Patch
+        {
+            [HarmonyPostfix]
+            public static void DisableDoctorWork(WorkTypeDef w, Pawn __instance, ref bool __result)
+            {
+                if (w == WorkTypeDefOf.Doctor && DraftingUtility.IsDraftableCreature(__instance)
+                    && __instance.RaceProps.IsMechanoid == false)
+                {
+                    __result = true;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(SchoolUtility), "CanTeachNow")]
+        public static class SchoolUtility_CanTeachNow_Patch
+        {
+            [HarmonyPrefix]
+            public static bool PreventTeaching(Pawn teacher, ref bool __result)
+            {
+                if (DraftingUtility.IsDraftableCreature(teacher))
+                {
+                    __result = false;
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(Pawn), "IsColonistPlayerControlled", MethodType.Getter)]
+        public static class Pawn_IsColonistPlayerControlled_Patch
+        {
+            [HarmonyPostfix]
+            public static void AddDraftableCreatureAsColonist(Pawn __instance, ref bool __result)
+            {
+                if (DraftingUtility.IsDraftableCreature(__instance))
+                {
+                    __result = __instance.Spawned && __instance.HostFaction == null && __instance.Faction == Faction.OfPlayer;
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(ZoneManager))]
         [HarmonyPatch("Notify_NoZoneOverlapThingSpawned")]
@@ -73,6 +134,36 @@ namespace EMF
             }
         }
 
+        [HarmonyPatch(typeof(Pawn_InventoryTracker), "GetGizmos")]
+        public class InventoryTracker_GetGizmos_Patch
+        {
+            static void Postfix(Pawn_InventoryTracker __instance, ref IEnumerable<Gizmo> __result)
+            {
+                var originalGizmos = __result.ToList();
+
+                var additionalGizmos = new List<Gizmo>();
+                foreach (var eq in __instance.GetDirectlyHeldThings())
+                {
+                    if (eq is ThingWithComps withComps)
+                    {
+                        if (eq is IDrawInventoryGizmos equippedGizmos)
+                        {
+                            additionalGizmos.AddRange(equippedGizmos.GetInventoryGizmos());
+                        }
+
+                        foreach (var item in withComps.AllComps)
+                        {
+                            if (item is IDrawInventoryGizmos compEquippedGizmos)
+                            {
+                                additionalGizmos.AddRange(compEquippedGizmos.GetInventoryGizmos());
+                            }
+                        }
+                    }
+                }
+
+                __result = originalGizmos.Concat(additionalGizmos);
+            }
+        }
 
 
         [HarmonyPatch(typeof(Pawn_EquipmentTracker))]

@@ -13,21 +13,26 @@ namespace EMF
         }
     }
 
-    public class ToggleAbilityComp_ToggleHediff : BaseToggleAbilityComp
+    public class ToggleAbilityComp_ToggleHediff : CompAbilityEffect_Toggleable
     {
         public CompProperties_ResourceToggleHediff Props => (CompProperties_ResourceToggleHediff)props;
 
-        public override void OnParentActivated()
+        public override bool CanStart()
         {
-            parent.pawn.health.AddHediff(Props.hediffDef, null);
+            return true;
         }
 
-        public override void OnParentDeactivated()
+        public override void OnToggleOff()
         {
             if (parent.pawn.health.hediffSet.HasHediff(Props.hediffDef))
             {
                 parent.pawn.health.RemoveHediff(parent.pawn.health.hediffSet.GetFirstHediffOfDef(Props.hediffDef));
             }
+        }
+
+        public override void OnToggleOn()
+        {
+            parent.pawn.health.AddHediff(Props.hediffDef, null);
         }
     }
 }

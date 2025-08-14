@@ -14,7 +14,10 @@ namespace EMF
         public static ThingDef EMF_ThingFlyer;
         public static ThingDef EMF_DelegateFlyer;
         public static ThingDef EMF_BeamThing;
+
+
         public static HediffDef EMF_BoundWeapon;
+        public static HediffDef EMF_SummonedPawn;
 
         public static JobDef EMF_CastAbilityChannel;
         public static JobDef EMF_JobTransformIntoBuilding;

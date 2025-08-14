@@ -7,8 +7,7 @@ namespace EMF
 {
     public class ProjectileCompProperties_AOEDamageAlongPath : ProjectileCompProperties
     {
-        public DamageDef damageDef;
-        public float damageAmount = 10f;
+        public DamageParameters damageParms;
         public float radius = 2.5f;
         public int damageInterval = 2;
         public bool growRadius = false;
@@ -79,8 +78,10 @@ namespace EMF
                                 Props.flightEffecter.Spawn(center, map);
                             }
 
-                            DamageInfo damageInfo = new DamageInfo(Props.damageDef, Props.damageAmount, 0f, -1f, this.ParentAsProjectile.Launcher, null, null, DamageInfo.SourceCategory.ThingOrUnknown, null);
-                            pawn.TakeDamage(damageInfo);
+                            if (Props.damageParms != null)
+                            {
+                                Props.damageParms.DealDamageTo(this.ParentAsProjectile.Launcher, pawn);
+                            }
                         }
                     }
                 }
@@ -89,7 +90,7 @@ namespace EMF
 
         private bool ShouldDamageThing(Thing thing)
         {
-            return thing != null && !thing.Destroyed && thing.CanTargetThing(parent.Faction, Props.friendlyFireSettings);
+            return thing != null && !thing.Destroyed && Props.friendlyFireSettings.CanTargetThing(thing, this.ParentAsProjectile.Launcher);
         }
     }
 }

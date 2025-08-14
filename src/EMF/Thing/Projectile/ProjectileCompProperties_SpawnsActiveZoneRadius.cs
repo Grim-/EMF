@@ -25,7 +25,7 @@ namespace EMF
 
             Map map = parent.Map;
             IntVec3 loc = parent.Position;
-            ActiveZone activeZone = ActiveZone.SpawnZone(Props.spawnsThingDef, loc, GenRadial.RadialCellsAround(loc, Props.radius, true).ToList(), map, this.Launcher);
+            ActiveZone activeZone = ActiveZone.SpawnZone(Props.spawnsThingDef, loc, GenRadial.RadialCellsAround(loc, Props.radius, true).ToList(), map, this.ParentAsProjectile.Launcher);
         }
     }
 }

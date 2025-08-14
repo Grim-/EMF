@@ -3,6 +3,8 @@ using Verse;
 
 namespace EMF
 {
+
+
     public class CompProperties_AbilityEffectChannelable : CompProperties_AbilityEffect
     {
         public int channelTicks = 2000;

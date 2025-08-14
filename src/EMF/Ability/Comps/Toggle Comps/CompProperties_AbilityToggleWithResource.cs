@@ -4,8 +4,6 @@ using Verse;
 
 namespace EMF
 {
-
-
     public class CompProperties_AbilityToggleWithResource : CompProperties_AbilityEffect
     {
         public HediffDef hediffDef;
@@ -17,8 +15,6 @@ namespace EMF
             compClass = typeof(CompAbilityEffect_ToggleWithResource);
         }
     }
-
-
 
     public class CompAbilityEffect_ToggleWithResource : CompAbilityEffect
     {
@@ -62,21 +58,43 @@ namespace EMF
             if (parent.pawn == null || Props.hediffDef == null)
                 return;
 
-            bool hasHediff = parent.pawn.health.hediffSet.HasHediff(Props.hediffDef);
-
-            if (hasHediff)
+            if (this.parent is ResourceToggleAbility toggleAbility)
             {
-                parent.pawn.health.RemoveHediff(parent.pawn.health.hediffSet.GetFirstHediffOfDef(Props.hediffDef));
+                if (toggleAbility.IsActive)
+                {
+                    Apply();
+                }
+                else Remove();
             }
             else
             {
-                Gene_BasicResource resourceGene = GetResourceGene();
-                if (resourceGene != null && resourceGene.Has(Props.activationCost))
+                bool hasHediff = parent.pawn.health.hediffSet.HasHediff(Props.hediffDef);
+
+                if (hasHediff)
                 {
-                    resourceGene.Consume(Props.activationCost);
-                    parent.pawn.health.AddHediff(Props.hediffDef, null);
+                    Remove();
+                }
+                else
+                {
+                    Apply();
                 }
             }
+
+        }
+
+        private void Apply()
+        {
+            Gene_BasicResource resourceGene = GetResourceGene();
+            if (resourceGene != null && resourceGene.Has(Props.activationCost))
+            {
+                resourceGene.Consume(Props.activationCost);
+                parent.pawn.health.AddHediff(Props.hediffDef, null);
+            }
+        }
+
+        private void Remove()
+        {
+            parent.pawn.health.RemoveHediff(parent.pawn.health.hediffSet.GetFirstHediffOfDef(Props.hediffDef));
         }
 
         private Gene_BasicResource GetResourceGene()

@@ -50,7 +50,7 @@ namespace EMF
             set => _IsLocked = value;
         }
 
-        private bool _IsRegenEnabled = false;
+        private bool _IsRegenEnabled = true;
         public bool IsRegenEnabled
         {
             get
@@ -411,34 +411,6 @@ namespace EMF
             {
                 yield return gizmo;
             }
-
-            //if (Active)
-            //{
-            //    bool shouldShowGizmos = (Find.Selector.SelectedPawns.Count == 1 || this.def.showGizmoOnMultiSelect) &&
-            //                           (!this.pawn.Drafted || this.def.showGizmoWhenDrafted);
-
-            //    if (shouldShowGizmos)
-            //    {
-            //        foreach (var item in additionalResources)
-            //        {
-            //            var resource = item;
-
-            //            if (resource.Value.resourceDef == null)
-            //                continue;
-
-            //            if (!IsAdditionalResourceVisible(resource.Value.resourceDef))
-            //                continue;
-
-            //            bool shouldShow = true;
-
-            //            if (shouldShow)
-            //            {
-            //                TryInitGizmoForResource(item.Value.resourceDef, item.Value);
-            //                yield return GetGizmoForResource(item.Value.resourceDef);
-            //            }
-            //        }
-            //    }
-            //}
 
             if (DebugSettings.godMode)
             {

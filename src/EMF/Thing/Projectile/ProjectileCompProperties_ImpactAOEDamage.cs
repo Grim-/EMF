@@ -6,8 +6,7 @@ namespace EMF
 {
     public class ProjectileCompProperties_ImpactAOEDamage : ProjectileCompProperties
     {
-        public DamageDef damageDef;
-        public FloatRange damageAmount = new FloatRange(10f, 10f);
+        public DamageParameters damageParms;
         public FloatRange radius = new FloatRange(3f, 3f);
         public IntRange sections = new IntRange(4,4);
         public EffecterDef effecterDef = null;
@@ -34,9 +33,11 @@ namespace EMF
             {
                 foreach (var item in cell.GetThingList(map).ToList())
                 {
-                    DamageInfo damage = new DamageInfo(Props.damageDef != null ? Props.damageDef : DamageDefOf.Bomb, Props.damageAmount.RandomInRange);
-                    item.TakeDamage(damage);
-
+                    if (Props.friendlyFireSettings.CanTargetThing(item, this.ParentAsProjectile.Launcher))
+                    {
+                        Props.damageParms.DealDamageTo(this.ParentAsProjectile.Launcher, item);
+                    }
+              
                     if (Props.effecterDef != null)
                     {
                         Props.effecterDef.Spawn(item.Position, map);

@@ -9,7 +9,7 @@ namespace EMF
 
         public HediffCompProperties_PawnStore()
         {
-            compClass = typeof(HediffComp_DisableMagic);
+            compClass = typeof(HediffComp_PawnStore);
         }
     }
 
@@ -17,14 +17,13 @@ namespace EMF
     {
         protected HediffCompProperties_PawnStore Props => (HediffCompProperties_PawnStore)props;
 
-        protected ThingOwner<Thing> innerContainer;
+        protected PawnStorageTracker StorageTracker = null;
+        public IThingHolder ParentHolder => this.Pawn;
 
         public HediffComp_PawnStore()
         {
-            innerContainer = new ThingOwner<Thing>(this, Props.oneStackOnly, LookMode.Deep);
+            StorageTracker = new PawnStorageTracker(this);
         }
-
-        public IThingHolder ParentHolder => this.Pawn.ParentHolder;
 
         public void GetChildHolders(List<IThingHolder> outChildren)
         {
@@ -33,22 +32,13 @@ namespace EMF
 
         public ThingOwner GetDirectlyHeldThings()
         {
-            return innerContainer;
+            return StorageTracker.GetDirectlyHeldThings();
         }
-
 
         public override void CompExposeData()
         {
             base.CompExposeData();
-            Scribe_Deep.Look(ref innerContainer, "innerContainer", this);
-
-            if (Scribe.mode == LoadSaveMode.PostLoadInit)
-            {
-                if (innerContainer == null)
-                {
-                    innerContainer = new ThingOwner<Thing>(this, false, LookMode.Deep);
-                }
-            }
+            Scribe_Deep.Look(ref StorageTracker, "StorageTracker", this);
         }
     }
 }

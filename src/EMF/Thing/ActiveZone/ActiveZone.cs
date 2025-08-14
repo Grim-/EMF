@@ -97,7 +97,7 @@ namespace EMF
             {
                 return;
             }
-
+            GenDraw.DrawFieldEdges(ZoneCells, ActiveZoneDef.zoneColor);
             ZoneLifetimeTicks++;
 
             if (ZoneLifetimeTicks >= ZoneLifeTime)
@@ -173,7 +173,7 @@ namespace EMF
                 return;
             }
 
-            GenDraw.DrawFieldEdges(ZoneCells,  ActiveZoneDef.zoneColor);
+         
         }
 
         public HashSet<Thing> GetCurrentThingsInZone(ref List<IntVec3> cells)

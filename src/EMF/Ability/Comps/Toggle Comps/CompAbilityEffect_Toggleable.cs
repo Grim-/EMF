@@ -5,11 +5,10 @@ using Verse;
 
 namespace EMF
 {
-
-
     public abstract class CompAbilityEffect_Toggleable : CompAbilityEffect
     {
-        protected bool IsActive = false;
+        protected bool _IsActive = false;
+        public virtual bool IsActive { get => _IsActive; set => _IsActive = value; }
 
         public abstract void OnToggleOn();
         public abstract void OnToggleOff();
@@ -19,15 +18,15 @@ namespace EMF
             if (IsActive)
             {
                 IsActive = false;
-                OnToggleOff();
+                //OnToggleOff();
             }
             else
             {
-                if (CanStart())
-                {
+               // if (CanStart())
+               // {
                     IsActive = true;
-                    OnToggleOn();
-                }
+                //    OnToggleOn();
+                //}
             }
         }
 
@@ -38,7 +37,7 @@ namespace EMF
         {
             base.PostExposeData();
 
-            Scribe_Values.Look(ref IsActive, "isActive", false);
+            Scribe_Values.Look(ref _IsActive, "isActive", false);
         }
     }
 }
