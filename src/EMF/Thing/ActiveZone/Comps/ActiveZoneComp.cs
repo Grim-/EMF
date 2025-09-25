@@ -21,6 +21,8 @@ namespace EMF
             }
         }
 
+
+
         public virtual void OnZoneSpawned(ActiveZone ParentZone, ref List<IntVec3> cells)
         {
 

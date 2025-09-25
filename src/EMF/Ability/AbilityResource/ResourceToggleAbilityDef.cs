@@ -11,7 +11,7 @@ namespace EMF
         public string customEnabledTexPath = string.Empty;
         public string customDisabledTexPath = string.Empty;
 
-        public Texture2D ToggleEnabledTex => string.IsNullOrEmpty(customEnabledTexPath)?  Widgets.CheckboxOnTex : ContentFinder<Texture2D>.Get(customEnabledTexPath);
+        public Texture2D ToggleEnabledTex => string.IsNullOrEmpty(customEnabledTexPath) ? Widgets.CheckboxOnTex : ContentFinder<Texture2D>.Get(customEnabledTexPath);
         public Texture2D ToggleDisabledTex => string.IsNullOrEmpty(customDisabledTexPath) ? Widgets.CheckboxOffTex : ContentFinder<Texture2D>.Get(customDisabledTexPath);
 
 

@@ -1,10 +1,12 @@
 ﻿using RimWorld;
+using System.Linq;
+using UnityEngine;
 using Verse;
+using Verse.AI;
+using Verse.Sound;
 
 namespace EMF
 {
-
-
     public class CompProperties_AbilityEffectChannelable : CompProperties_AbilityEffect
     {
         public int channelTicks = 2000;
@@ -41,6 +43,6 @@ namespace EMF
         {
 
         }
-
     }
+
 }

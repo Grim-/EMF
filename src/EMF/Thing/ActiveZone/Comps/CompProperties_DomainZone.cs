@@ -40,18 +40,14 @@ namespace EMF
         public CompProperties_DomainZone Props => (CompProperties_DomainZone)this.props;
 
         protected HashSet<IntVec3> wallCells;
-        protected List<Thing> constructedWalls;
-        protected List<Thing> spawnedThings;
-        private HashSet<IntVec3> AddedFilth = new HashSet<IntVec3>();
+        protected HashSet<Thing> constructedWalls;
+        protected HashSet<Thing> spawnedThings;
 
         private Dictionary<IntVec3, TerrainDef> originalTerrain = new Dictionary<IntVec3, TerrainDef>();
         private Dictionary<IntVec3, List<Thing>> originalThings = new Dictionary<IntVec3, List<Thing>>();
         private Dictionary<IntVec3, List<Thing>> originalWallCellContents = new Dictionary<IntVec3, List<Thing>>();
         private bool terrainChanged = false;
         private bool wallsConstructed = false;
-
-        private ThingCategory AllowedForSavingThingCategories = ThingCategory.Item;
-
 
         private bool ShouldConstructWalls => Props.WallDef != null && Props.ConstructWalls;
         private bool ShouldReplaceTerrain => Props.FloorDef != null && Props.ReplaceFloor;
@@ -75,17 +71,11 @@ namespace EMF
             {
                 ChangeTerrain(cells);
             }
-
-            if (ShouldSpawnFilth)
-            {
-                CreateFilth(cells);
-            }
         }
 
         public override void OnZoneDespawned(ActiveZone ParentZone, ref List<IntVec3> cells)
         {
             RemoveWalls();
-            RemoveFilth();
             RevertTerrain();
         }
 
@@ -132,7 +122,6 @@ namespace EMF
                             originalTerrain[cell] = currentTerrain;
                         }
 
-                        StoreThingsForCell(cell);
                         ParentZone.Map.terrainGrid.SetTerrain(cell, Props.FloorDef);
                     }
                 }
@@ -171,89 +160,25 @@ namespace EMF
             }
         }
 
-        private void CreateFilth(List<IntVec3> zoneCells)
-        {
-            if (Props.FilthDef != null)
-            {
-                AddedFilth.Clear();
-                foreach (IntVec3 cell in zoneCells)
-                {
-                    if (FilthMaker.CanMakeFilth(cell, ParentZone.Map, Props.FilthDef))
-                    {
-                        if (FilthMaker.TryMakeFilth(cell, ParentZone.Map, Props.FilthDef,1 , FilthSourceFlags.None))
-                        {
-                            AddedFilth.Add(cell);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void RemoveFilth()
-        {
-            foreach (IntVec3 cell in AddedFilth)
-            {
-                FilthMaker.RemoveAllFilth(cell, ParentZone.Map);
-            }
-            AddedFilth.Clear();
-        }
 
         public virtual void ConstructWalls(List<IntVec3> zoneCells)
         {
             if (Props.WallDef != null)
             {
                 CalculateWallCells(zoneCells);
-                constructedWalls = new List<Thing>();
+                constructedWalls = new HashSet<Thing>();
 
                 foreach (IntVec3 cell in wallCells)
                 {
                     if (cell.InBounds(ParentZone.Map) && cell != ParentZone.Position)
                     {
                         StoreThingsForCell(cell);
-
-                        Thing wall = ThingMaker.MakeThing(Props.WallDef, Props.WallStuffDef != null ? Props.WallStuffDef : GenStuff.DefaultStuffFor(Props.WallDef));
-                        if (wall != null)
-                        {
-                            Thing spawnedWall = GenSpawn.Spawn(wall, cell, ParentZone.Map);
-                            if (spawnedWall != null)
-                            {
-                                constructedWalls.Add(spawnedWall);
-                            }
-                        }
+                        MakeWall(cell);
                     }
                 }
                 wallsConstructed = true;
             }
         }
-
-        private void StoreThingsForCell(IntVec3 cell)
-        {
-            List<Thing> cellContents = cell.GetThingList(ParentZone.Map)
-               .Where(t => CanBeSavedByZone(t))
-               .ToList();
-            if (cellContents.Any())
-            {
-                originalWallCellContents[cell] = cellContents;
-                foreach (Thing thing in cellContents)
-                {
-                    if (thing.Spawned)
-                    {
-                        thing.DeSpawn();
-                    }
-                }
-            }
-        }
-
-        private bool CanBeSavedByZone(Thing thing)
-        {
-            return AllowedForSavingThingCategories.HasFlag(thing.def.category) && CanEverBeSavedByZone(thing);
-        }
-
-        private bool CanEverBeSavedByZone(Thing thing)
-        {
-            return thing != ParentZone && !thing.GetType().IsAssignableFrom(typeof(ActiveZone));
-        }
-
         public virtual void RemoveWalls()
         {
             if (wallsConstructed)
@@ -287,6 +212,45 @@ namespace EMF
                 wallsConstructed = false;
             }
         }
+        private void MakeWall(IntVec3 cell)
+        {
+            Thing wall = ThingMaker.MakeThing(Props.WallDef, Props.WallStuffDef != null ? Props.WallStuffDef : GenStuff.DefaultStuffFor(Props.WallDef));
+            if (wall != null)
+            {
+                GenSpawn.Spawn(wall, cell, ParentZone.Map);
+                constructedWalls.Add(wall);
+            }
+        }
+
+        private void StoreThingsForCell(IntVec3 cell)
+        {
+            List<Thing> cellContents = cell.GetThingList(ParentZone.Map)
+               .Where(t => CanBeSavedByZone(t))
+               .ToList();
+            if (cellContents.Any())
+            {
+                originalWallCellContents[cell] = cellContents;
+                foreach (Thing thing in cellContents)
+                {
+                    if (thing.Spawned)
+                    {
+                        thing.DeSpawn();
+                    }
+                }
+            }
+        }
+
+        private bool CanBeSavedByZone(Thing thing)
+        {
+            return thing.def.category == ThingCategory.Building || thing.def.category == ThingCategory.Plant || thing.def.category == ThingCategory.Item  && CanEverBeSavedByZone(thing);
+        }
+
+        private bool CanEverBeSavedByZone(Thing thing)
+        {
+            return !(thing is ActiveZone) && !(thing is Pawn) && !(thing is Projectile);
+        }
+
+
 
         public override void PostExposeData()
         {

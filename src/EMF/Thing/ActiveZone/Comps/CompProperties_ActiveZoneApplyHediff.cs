@@ -31,6 +31,11 @@ namespace EMF
 
             if (!pawn.health.hediffSet.HasHediff(Props.hediff) && pawn.CanTargetThing(this.parent.Faction, Props.friendlyFireSettings))
             {
+                if (pawn == this.ParentZone.Owner)
+                {
+                    return;
+                }
+
                 Hediff hediff = pawn.health.GetOrAddHediff(Props.hediff);
                 if (hediff != null)
                 {
@@ -52,7 +57,7 @@ namespace EMF
             {
                 if (item is Pawn pawn)
                 {
-                    if (!pawn.health.hediffSet.HasHediff(Props.hediff) && pawn.CanTargetThing(this.parent.Faction, Props.friendlyFireSettings))
+                    if (!pawn.health.hediffSet.HasHediff(Props.hediff) && Props.friendlyFireSettings.CanTargetThing(item, this.ParentZone.Owner))
                     {
                         Hediff hediff = pawn.health.GetOrAddHediff(Props.hediff);
                         if (hediff != null)
@@ -73,7 +78,7 @@ namespace EMF
             if (!Props.removeOnLeaveZone || !(thing is Pawn pawn))
                 return;
 
-            if (thing.CanTargetThing(this.parent.Faction, Props.friendlyFireSettings))
+            if (Props.friendlyFireSettings.CanTargetThing(thing, this.ParentZone.Owner))
             {
                 Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(Props.hediff);
                 if (hediff != null)
@@ -96,7 +101,7 @@ namespace EMF
             var thingsInZone = parentZone.PawnsInZoneRead;
             foreach (var thing in thingsInZone)
             {
-                if (thing.CanTargetThing(this.parent.Faction, Props.friendlyFireSettings))
+                if (Props.friendlyFireSettings.CanTargetThing(thing, this.ParentZone.Owner))
                 {
                     Hediff hediff = thing.health.hediffSet.GetFirstHediffOfDef(Props.hediff);
                     if (hediff != null)

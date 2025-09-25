@@ -20,6 +20,7 @@ namespace EMF
         public static HediffDef EMF_SummonedPawn;
 
         public static JobDef EMF_CastAbilityChannel;
+        public static JobDef EMF_CastAbilityChannelSelf;
         public static JobDef EMF_JobTransformIntoBuilding;
         public static JobDef EMF_JobDoWeaponTransformation;
     }

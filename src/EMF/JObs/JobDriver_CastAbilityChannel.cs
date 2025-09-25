@@ -24,7 +24,7 @@ namespace EMF
         {
             var ability = Job.ability;
             var effectComps = ability.EffectComps;
-
+            Log.Error($"Ability MakeNewToils");
             bool hasChannelableComp = false;
             foreach (var comp in effectComps)
             {
@@ -41,9 +41,11 @@ namespace EMF
                 yield break;
             }
 
-            yield return Toils_Combat.CastVerb(TargetIndex.A, TargetIndex.B, false);
 
+           // Log.Error($"Ability CastVerb");
+           // yield return Toils_Combat.CastVerb(TargetIndex.A, TargetIndex.B, false);
 
+            Log.Error($"Ability OnChanneBegin");
             yield return Toils_General.Do(delegate
             {
                 foreach (var comp in effectComps)

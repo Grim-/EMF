@@ -74,16 +74,19 @@
   <ItemGroup>
     <Compile Include="Ability\AbilityResource\AbilityResourceDef.cs" />
     <Compile Include="Ability\AbilityResource\BasicResourceGeneDef.cs" />
+    <Compile Include="Ability\Channelable\CompProperties_AbilityEffectDomainExpansion.cs" />
+    <Compile Include="Ability\Comps\Toggle Comps\CompProperties_ToggleActiveZone.cs" />
     <Compile Include="Gizmo\Command_ToggleAbility.cs" />
     <Compile Include="Ability\Comps\Area Damage\CompProperties_DamageImpact.cs" />
     <Compile Include="Ability\Comps\Area Damage\CompProperties_HediffImpact.cs" />
     <Compile Include="Ability\Comps\Area Damage\CompProperties_RadialZoneImpact.cs" />
     <Compile Include="Ability\Comps\Area Damage\CompProperties_StunImpact.cs" />
-    <Compile Include="Ability\Comps\CompProperties_AbilityEffectChannelable.cs" />
-    <Compile Include="Ability\Comps\CompProperties_AbilityEffectChannelableBeam.cs" />
+    <Compile Include="Ability\Channelable\CompProperties_AbilityEffectChannelable.cs" />
+    <Compile Include="Ability\Channelable\CompProperties_AbilityEffectChannelableBeam.cs" />
     <Compile Include="Ability\AbilityResource\LevelingResourceAbilityDef.cs" />
     <Compile Include="Ability\Comps\CompProperties_AbilityAddStacks.cs" />
     <Compile Include="Ability\Comps\CompProperties_AbilityEffectSummon.cs" />
+    <Compile Include="JObs\JobDriver_CastAbilityChannelSelf.cs" />
     <Compile Include="Thing\Behaviours\CarryingFlyer.cs" />
     <Compile Include="TransformationPatches.cs" />
     <Compile Include="Utils\Params Helpers\SummonParameters.cs" />
@@ -261,7 +264,7 @@
     <Compile Include="Hediff\Combo\ComboReactionWorker_Stun.cs" />
     <Compile Include="Ability\Comps\Toggle Comps\CompAbilityEffect_Toggleable.cs" />
     <Compile Include="Ability\Comps\CompProperties_GainHediff.cs" />
-    <Compile Include="Ability\Comps\CompProperties_ToggleHediff.cs" />
+    <Compile Include="Ability\Comps\Toggle Comps\CompProperties_ToggleHediff.cs" />
     <Compile Include="EMFDefOf.cs" />
     <Compile Include="EventManager.cs" />
     <Compile Include="EventPatches.cs" />
