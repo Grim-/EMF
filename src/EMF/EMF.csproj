@@ -76,6 +76,7 @@
     <Compile Include="Ability\AbilityResource\BasicResourceGeneDef.cs" />
     <Compile Include="Ability\Channelable\CompProperties_AbilityEffectDomainExpansion.cs" />
     <Compile Include="Ability\Comps\Toggle Comps\CompProperties_ToggleActiveZone.cs" />
+    <Compile Include="UI\Window_GridSelection.cs" />
     <Compile Include="Gizmo\Command_ToggleAbility.cs" />
     <Compile Include="Ability\Comps\Area Damage\CompProperties_DamageImpact.cs" />
     <Compile Include="Ability\Comps\Area Damage\CompProperties_HediffImpact.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Ability\AbilityResource\LevelingResourceAbilityDef.cs" />
     <Compile Include="Ability\Comps\CompProperties_AbilityAddStacks.cs" />
     <Compile Include="Ability\Comps\CompProperties_AbilityEffectSummon.cs" />
+    <Compile Include="Interfaces\IAbilityResourceContainer.cs" />
     <Compile Include="JObs\JobDriver_CastAbilityChannelSelf.cs" />
     <Compile Include="Thing\Behaviours\CarryingFlyer.cs" />
     <Compile Include="TransformationPatches.cs" />

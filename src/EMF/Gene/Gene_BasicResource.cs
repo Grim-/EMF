@@ -5,10 +5,18 @@ using Verse;
 
 namespace EMF
 {
-    public class Gene_BasicResource : Gene_Resource, IGeneResourceDrain
+    public class Gene_BasicResource : Gene_Resource, IGeneResourceDrain, IAbilityResourceContainer
     {
-        public BasicResourceGeneDef Def => def != null ? (BasicResourceGeneDef)def : null;
         public AbilityResourceDef ResourceDef => Def?.primaryResourceDef;
+        public float CurrentValue => Value;
+        public float MaxValue => Max;
+
+        public bool HasResource(float amount) => Has(amount);
+
+        public void ConsumeResource(float amount) => Consume(amount);
+
+        public void RestoreResource(float amount) => Restore(amount);
+        public BasicResourceGeneDef Def => def != null ? (BasicResourceGeneDef)def : null;
 
         public bool EnableResource = true;
         public Gene_Resource Resource => this;
@@ -105,6 +113,8 @@ namespace EMF
         public float RegenSpeed => ResourceDef?.RegenSpeedStatValue(Pawn) ?? 1f;
         public int RegenTicks => ResourceDef != null ? Mathf.RoundToInt(ResourceDef.RegenTicksValue(Pawn) / RegenSpeed) : Mathf.RoundToInt(2500 / RegenSpeed);
         public float CostMult => ResourceDef?.CostMultValue(Pawn) ?? 1f;
+
+        public bool ResourceLocked => IsLocked;
 
         public float TotalResourceUsed = 0;
 

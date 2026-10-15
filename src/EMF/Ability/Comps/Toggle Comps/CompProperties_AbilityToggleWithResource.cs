@@ -32,15 +32,16 @@ namespace EMF
 
             if (!hasHediff)
             {
-                Gene_BasicResource resourceGene = GetResourceGene();
-                if (resourceGene == null)
+                IAbilityResourceContainer container = parent.pawn.GetResourceHolder(Props.resourceDef);
+
+                if (container == null)
                 {
                     if (throwMessages)
-                        Messages.Message("No resource gene found", MessageTypeDefOf.RejectInput);
+                        Messages.Message("No resource source found", MessageTypeDefOf.RejectInput);
                     return false;
                 }
 
-                if (!resourceGene.Has(Props.activationCost))
+                if (!container.HasResource(Props.activationCost))
                 {
                     if (throwMessages)
                         Messages.Message($"Not enough {Props.resourceDef.resourceName}", MessageTypeDefOf.RejectInput);
@@ -62,9 +63,12 @@ namespace EMF
             {
                 if (toggleAbility.IsActive)
                 {
-                    Apply();
+                    ApplyToggle();
                 }
-                else Remove();
+                else
+                {
+                    RemoveToggle();
+                }
             }
             else
             {
@@ -72,39 +76,33 @@ namespace EMF
 
                 if (hasHediff)
                 {
-                    Remove();
+                    RemoveToggle();
                 }
                 else
                 {
-                    Apply();
+                    ApplyToggle();
                 }
             }
-
         }
 
-        private void Apply()
+        private void ApplyToggle()
         {
-            Gene_BasicResource resourceGene = GetResourceGene();
-            if (resourceGene != null && resourceGene.Has(Props.activationCost))
+            IAbilityResourceContainer container = parent.pawn.GetResourceHolder(Props.resourceDef);
+
+            if (container != null && container.HasResource(Props.activationCost))
             {
-                resourceGene.Consume(Props.activationCost);
+                container.ConsumeResource(Props.activationCost);
                 parent.pawn.health.AddHediff(Props.hediffDef, null);
             }
         }
 
-        private void Remove()
+        private void RemoveToggle()
         {
-            parent.pawn.health.RemoveHediff(parent.pawn.health.hediffSet.GetFirstHediffOfDef(Props.hediffDef));
-        }
-
-        private Gene_BasicResource GetResourceGene()
-        {
-            if (parent.pawn?.genes?.GenesListForReading == null || Props.resourceDef == null)
-                return null;
-
-            return parent.pawn.genes.GenesListForReading
-                .OfType<Gene_BasicResource>()
-                .FirstOrDefault(g => g.ResourceDef == Props.resourceDef);
+            Hediff hediff = parent.pawn.health.hediffSet.GetFirstHediffOfDef(Props.hediffDef);
+            if (hediff != null)
+            {
+                parent.pawn.health.RemoveHediff(hediff);
+            }
         }
     }
 }

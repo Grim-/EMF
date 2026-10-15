@@ -19,28 +19,21 @@ namespace EMF
 
         public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
         {
-            if (!base.Valid(target, throwMessages))
-                return false;
+            if (!base.Valid(target, throwMessages)) return false;
 
-            Gene_BasicResource resourceGene = GetResourceGene();
-            if (resourceGene == null)
-            {
-                if (throwMessages)
-                    Messages.Message("No resource gene found", MessageTypeDefOf.RejectInput);
-                return false;
-            }
+            // 1. Try to find the Interface on a Gene
+            IAbilityResourceContainer holder = parent.pawn.GetResourceHolder(Props.resourceDef);
 
-            if (!resourceGene.Has(Props.resourceCost))
+            if (holder == null)
             {
-                if (throwMessages)
-                    Messages.Message($"Not enough {Props.resourceDef.resourceName}", MessageTypeDefOf.RejectInput);
+                if (throwMessages) Messages.Message("No resource source found", MessageTypeDefOf.RejectInput);
                 return false;
             }
 
-
-            if (resourceGene.ResourceIsUnavailable(out string reason))
+            // 2. Use the Interface methods
+            if (!holder.HasResource(Props.resourceCost))
             {
-                Messages.Message(reason, MessageTypeDefOf.RejectInput);
+                if (throwMessages) Messages.Message($"Not enough {Props.resourceDef.resourceName}", MessageTypeDefOf.RejectInput);
                 return false;
             }
 
@@ -51,20 +44,12 @@ namespace EMF
         {
             base.Apply(target, dest);
 
-            Gene_BasicResource resourceGene = GetResourceGene();
-            if (resourceGene != null && resourceGene.Has(Props.resourceCost))
-            {
-                resourceGene.Consume(Props.resourceCost);
-            }
+            IAbilityResourceContainer holder = parent.pawn.GetResourceHolder(Props.resourceDef);
+            holder?.ConsumeResource(Props.resourceCost);
         }
 
-        private Gene_BasicResource GetResourceGene()
-        {
-            if (parent.pawn?.genes?.GenesListForReading == null || Props.resourceDef == null)
-                return null;
+        // The Helper that bridges the gap
 
-            return parent.pawn.GetGeneForResourceDef(Props.resourceDef);
-        }
     }
 
 }

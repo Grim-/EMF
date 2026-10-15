@@ -16,6 +16,38 @@ namespace EMF
       
         }
 
+        public static IAbilityResourceContainer GetResourceHolder(this Pawn pawn, AbilityResourceDef def)
+        {
+            if (pawn == null) 
+                return null;
+
+
+            var comps = pawn.AllComps;
+            for (int i = 0; i < comps.Count; i++)
+            {
+                if (comps[i] is IAbilityResourceContainer compHolder && compHolder.ResourceDef == def)
+                {
+                    return compHolder;
+                }
+            }
+
+            var gene = pawn.GetGeneForResourceDef(def);
+            if (gene is IAbilityResourceContainer geneHolder) 
+                return geneHolder;
+
+            var hediffs = pawn.health.hediffSet.hediffs;
+
+            for (int i = 0; i < hediffs.Count; i++)
+            {
+                if (hediffs[i] is IAbilityResourceContainer compHolder && compHolder.ResourceDef == def)
+                {
+                    return compHolder;
+                }
+            }
+
+
+            return null;
+        }
         public static bool HasCooldownByTick(int LastTriggerTick, int CooldownTicks)
         {
             if (LastTriggerTick <= 0)
